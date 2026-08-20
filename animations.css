@@ -12,10 +12,10 @@
   will-change: transform;
 }
 
-/* ── Headline glow pulse (retro dot-matrix) ── */
+/* ── Headline glow pulse (retro dot-matrix with cyan aura) ── */
 @keyframes glowPulse {
-  0%, 100% { text-shadow: 0 0 8px rgba(255,255,255,0.15), 0 0 24px rgba(255,255,255,0.06); }
-  50%      { text-shadow: 0 0 18px rgba(255,255,255,0.35), 0 0 48px rgba(255,255,255,0.12); }
+  0%, 100% { text-shadow: 0 0 10px rgba(0, 212, 255, 0.2), 0 0 24px rgba(0, 212, 255, 0.08); }
+  50%      { text-shadow: 0 0 20px rgba(0, 212, 255, 0.45), 0 0 48px rgba(0, 212, 255, 0.16); }
 }
 .headline.glow-active .line {
   animation: glowPulse 3.2s ease-in-out infinite;

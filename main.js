@@ -105,7 +105,7 @@ function initMobileMenu() {
 // 4. INTERSECTION SIMULATOR ENGINE
 // ═══════════════════════════════════════════
 
-const VEHICLE_COLORS = ['#38bdf8', '#22c55e', '#a855f7', '#f97316', '#facc15', '#ec4899', '#06b6d4'];
+const VEHICLE_COLORS = ['#00D4FF', '#00E5A0', '#A78BFA', '#FFB020', '#FF3B4E', '#0891B2', '#7C5CFC'];
 
 class TrafficSim {
   constructor(canvasId, mode) {
@@ -388,21 +388,21 @@ class TrafficSim {
     const w = this.w, h = this.h;
 
     // Background
-    ctx.fillStyle = '#080c14';
+    ctx.fillStyle = '#04060A';
     ctx.fillRect(0, 0, w, h);
 
     // Roads
-    ctx.fillStyle = '#171d2b';
+    ctx.fillStyle = '#0B0F1A';
     ctx.fillRect(this.cx - this.roadW, 0, this.roadW * 2, h);
     ctx.fillRect(0, this.cy - this.roadW, w, this.roadW * 2);
 
     // Intersection center
-    ctx.fillStyle = '#1e2638';
+    ctx.fillStyle = '#121826';
     ctx.fillRect(this.cx - this.roadW, this.cy - this.roadW, this.roadW * 2, this.roadW * 2);
 
     // Center lane dashes
     ctx.setLineDash([8, 12]);
-    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    ctx.strokeStyle = 'rgba(0, 212, 255, 0.2)';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.moveTo(this.cx, 0); ctx.lineTo(this.cx, this.cy - this.roadW);
@@ -413,7 +413,7 @@ class TrafficSim {
     ctx.setLineDash([]);
 
     // Stop lines
-    ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+    ctx.strokeStyle = 'rgba(241, 245, 249, 0.4)';
     ctx.lineWidth = 2.5;
     ctx.beginPath();
     ctx.moveTo(this.cx, this.cy - this.roadW - 2); ctx.lineTo(this.cx + this.roadW, this.cy - this.roadW - 2);
@@ -440,7 +440,7 @@ class TrafficSim {
 
       // Emergency vehicle flashing strobe light
       if (v.isEmergency) {
-        ctx.fillStyle = (Date.now() % 300 < 150) ? '#ef4444' : '#38bdf8';
+        ctx.fillStyle = (Date.now() % 300 < 150) ? '#FF3B4E' : '#00D4FF';
         ctx.beginPath();
         ctx.arc(v.x, v.y, 4, 0, Math.PI * 2);
         ctx.fill();
@@ -461,9 +461,9 @@ class TrafficSim {
       case 'W': x = this.cx - offset; y = this.cy - this.roadW - 8; break;
     }
 
-    let color = '#ef4444';
-    if (this.isGreen(dir)) color = '#22c55e';
-    else if (this.isYellow(dir)) color = '#eab308';
+    let color = '#FF3B4E';
+    if (this.isGreen(dir)) color = '#00E5A0';
+    else if (this.isYellow(dir)) color = '#FFB020';
 
     // Glow halo
     ctx.beginPath();
@@ -683,23 +683,23 @@ function initChart() {
         {
           label: 'Fixed-Time (Legacy)',
           data: fixedData,
-          borderColor: '#ef4444',
-          backgroundColor: 'rgba(239,68,68,0.08)',
+          borderColor: '#FF3B4E',
+          backgroundColor: 'rgba(255, 59, 78, 0.1)',
           fill: true,
           tension: 0.4,
           pointRadius: 3,
-          pointBackgroundColor: '#ef4444',
+          pointBackgroundColor: '#FF3B4E',
           borderWidth: 2,
         },
         {
           label: 'SIGNAL-IQ Adaptive',
           data: adaptiveData,
-          borderColor: '#22c55e',
-          backgroundColor: 'rgba(34,197,94,0.08)',
+          borderColor: '#00E5A0',
+          backgroundColor: 'rgba(0, 229, 160, 0.1)',
           fill: true,
           tension: 0.4,
           pointRadius: 3,
-          pointBackgroundColor: '#22c55e',
+          pointBackgroundColor: '#00E5A0',
           borderWidth: 2.5,
         },
       ],
@@ -710,25 +710,25 @@ function initChart() {
       plugins: {
         legend: {
           position: 'top',
-          labels: { color: '#cbd5e1', font: { family: 'Plus Jakarta Sans', size: 12 }, boxWidth: 12 },
+          labels: { color: '#94A3B8', font: { family: 'Plus Jakarta Sans', size: 12 }, boxWidth: 12 },
         },
         tooltip: {
-          backgroundColor: '#0f172a',
-          titleColor: '#fff',
-          bodyColor: '#cbd5e1',
-          borderColor: 'rgba(255,255,255,0.15)',
+          backgroundColor: '#121826',
+          titleColor: '#F1F5F9',
+          bodyColor: '#94A3B8',
+          borderColor: '#1E2636',
           borderWidth: 1,
         },
       },
       scales: {
         x: {
-          ticks: { color: '#64748b', font: { size: 10, family: 'JetBrains Mono' } },
-          grid: { color: 'rgba(255,255,255,0.04)' },
+          ticks: { color: '#4B5670', font: { size: 10, family: 'JetBrains Mono' } },
+          grid: { color: 'rgba(30, 38, 54, 0.6)' },
         },
         y: {
-          title: { display: true, text: 'Average Wait (seconds)', color: '#94a3b8' },
-          ticks: { color: '#64748b', font: { size: 10, family: 'JetBrains Mono' } },
-          grid: { color: 'rgba(255,255,255,0.04)' },
+          title: { display: true, text: 'Average Wait (seconds)', color: '#94A3B8' },
+          ticks: { color: '#4B5670', font: { size: 10, family: 'JetBrains Mono' } },
+          grid: { color: 'rgba(30, 38, 54, 0.6)' },
         },
       },
     },
