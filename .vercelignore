@@ -1,0 +1,6 @@
+.git
+.agents
+.gemini
+*.log
+scratch/
+build.ps1

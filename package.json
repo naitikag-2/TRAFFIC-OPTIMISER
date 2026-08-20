@@ -1,18 +1,25 @@
 {
   "name": "signal-iq",
   "version": "1.0.0",
-  "description": "",
-  "main": "main.js",
+  "description": "SIGNAL-IQ: AI-Based Urban Traffic Signal Optimization (SIH 2026)",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "node build.js",
+    "start": "node server.js",
+    "dev": "node server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
+  "keywords": [
+    "traffic-optimization",
+    "ai",
+    "yolov8",
+    "smart-city",
+    "sih2026"
+  ],
+  "author": "SIGNAL-IQ Team",
+  "license": "MIT",
   "dependencies": {
-    "cors": "^2.8.6",
-    "express": "^5.2.1",
-    "ws": "^8.21.3"
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "ws": "^8.17.0"
   }
 }
