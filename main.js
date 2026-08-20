@@ -1124,52 +1124,89 @@ function initScrollReveal() {
 }
 
 // ═══════════════════════════════════════════
-// 10. NAV ACTIVE HIGHLIGHT ON SCROLL
+// 10. ENTERPRISE MULTI-TAB ROUTER
 // ═══════════════════════════════════════════
-function initNavHighlight() {
-  const links = $$('.nav-link, .mm-link');
-  const sections = [
-    { id: '', el: null },
-    { id: 'simulator', el: document.getElementById('simulator') },
-    { id: 'ai-engine', el: document.getElementById('ai-engine') },
-    { id: 'dashboard', el: document.getElementById('dashboard') },
-    { id: 'tech-stack', el: document.getElementById('tech-stack') },
-  ];
+function initTabRouter() {
+  const panels = $$('.tab-panel');
+  const navBtns = $$('.nav-tab-btn, .mm-link');
 
-  window.addEventListener('scroll', () => {
-    let current = '';
-    for (const s of sections) {
-      if (s.el && s.el.getBoundingClientRect().top < window.innerHeight * 0.4) {
-        current = s.id;
+  function activateTab(tabId) {
+    if (!tabId) tabId = 'home';
+    tabId = tabId.replace(/^#/, '');
+
+    // Map common aliases
+    if (tabId === 'tech-stack' || tabId === 'roadmap') tabId = 'architecture';
+
+    const targetPanel = document.getElementById(`tab-${tabId}`);
+    if (!targetPanel) tabId = 'home';
+
+    // Switch panels
+    panels.forEach(p => p.classList.remove('active'));
+    const activePanel = document.getElementById(`tab-${tabId}`);
+    if (activePanel) activePanel.classList.add('active');
+
+    // Update Nav Button Active States
+    navBtns.forEach(btn => {
+      const btnTab = (btn.dataset.tab || btn.getAttribute('href') || '').replace(/^#/, '');
+      btn.classList.toggle('active', btnTab === tabId);
+    });
+
+    // Resize Leaflet Map when Dashboard is revealed
+    if (tabId === 'dashboard' && gisMapInstance) {
+      setTimeout(() => {
+        gisMapInstance.invalidateSize();
+      }, 180);
+    }
+
+    // Scroll to top of the view
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Update URL hash
+    if (window.location.hash !== `#${tabId}`) {
+      history.pushState(null, '', `#${tabId}`);
+    }
+  }
+
+  // Bind click handler across entire document for any [data-tab] or anchor tab links
+  document.addEventListener('click', e => {
+    const trigger = e.target.closest('[data-tab], .nav-tab-btn, .mm-link, a[href^="#"]');
+    if (!trigger) return;
+
+    let tabId = trigger.dataset.tab;
+    if (!tabId && trigger.getAttribute('href')) {
+      const href = trigger.getAttribute('href');
+      if (href.startsWith('#')) {
+        tabId = href.substring(1);
       }
     }
-    links.forEach(l => {
-      const href = l.getAttribute('href') || '';
-      const id = href.replace('#', '');
-      l.classList.toggle('active', id === current || (current === '' && id === ''));
-    });
-  });
-}
 
-// ═══════════════════════════════════════════
-// 11. SMOOTH SCROLL FOR ANCHOR LINKS
-// ═══════════════════════════════════════════
-function initSmoothScroll() {
-  document.addEventListener('click', e => {
-    const link = e.target.closest('a[href^="#"]');
-    if (!link) return;
-    const id = link.getAttribute('href').slice(1);
-    if (!id) return;
-    const target = document.getElementById(id);
-    if (target) {
-      e.preventDefault();
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (tabId) {
+      if (tabId === 'home' || tabId === 'simulator' || tabId === 'ai-engine' || tabId === 'dashboard' || tabId === 'architecture' || tabId === 'tech-stack' || tabId === 'roadmap') {
+        e.preventDefault();
+        activateTab(tabId);
+
+        // Close mobile menu if open
+        const overlay = $('.overlay');
+        const mm = $('.mobile-menu');
+        if (overlay) overlay.hidden = true;
+        if (mm) mm.hidden = true;
+      }
     }
   });
+
+  // Handle URL hash on load
+  const initial = window.location.hash ? window.location.hash.substring(1) : 'home';
+  activateTab(initial);
+
+  // Handle browser back/forward buttons
+  window.addEventListener('popstate', () => {
+    const current = window.location.hash ? window.location.hash.substring(1) : 'home';
+    activateTab(current);
+  });
 }
 
 // ═══════════════════════════════════════════
-// 12. WEBSOCKET BACKEND INTEGRATION
+// 11. WEBSOCKET BACKEND INTEGRATION
 // ═══════════════════════════════════════════
 function initWebSocketBackend() {
   const wsUrl = (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws';
@@ -1206,7 +1243,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initRealLifeMap();
   initInferenceBenchmark();
   initScrollReveal();
-  initNavHighlight();
-  initSmoothScroll();
+  initTabRouter();
   initWebSocketBackend();
 });
