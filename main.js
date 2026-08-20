@@ -151,12 +151,19 @@ class TrafficSim {
 
   resize() {
     const rect = this.canvas.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    this.canvas.width = rect.width * dpr;
-    this.canvas.height = rect.height * dpr;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let w = rect.width;
+    let h = rect.height;
+    if (!w || w < 50) {
+      const parentRect = this.canvas.parentElement ? this.canvas.parentElement.getBoundingClientRect() : null;
+      w = (parentRect && parentRect.width > 50) ? parentRect.width : 540;
+      h = (parentRect && parentRect.height > 50) ? parentRect.height : 380;
+    }
+    this.canvas.width = w * dpr;
+    this.canvas.height = h * dpr;
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    this.w = rect.width;
-    this.h = rect.height;
+    this.w = w;
+    this.h = h;
     this.roadW = this.w * 0.15;
     this.cx = this.w / 2;
     this.cy = this.h / 2;
@@ -1126,83 +1133,126 @@ function initScrollReveal() {
 // ═══════════════════════════════════════════
 // 10. ENTERPRISE MULTI-TAB ROUTER
 // ═══════════════════════════════════════════
+const VALID_TABS = ['home', 'simulator', 'ai-engine', 'dashboard', 'architecture'];
+const TAB_ALIASES = { 'tech-stack': 'architecture', 'roadmap': 'architecture', 'impact': 'home' };
+// Keyboard shortcuts: key → tab
+const KEY_SHORTCUTS = {
+  '1': 'home',
+  '2': 'simulator',
+  '3': 'ai-engine',
+  '4': 'dashboard',
+  '5': 'architecture',
+  'h': 'home',
+  's': 'simulator',
+  'a': 'ai-engine',
+  'g': 'dashboard',
+  'r': 'architecture'
+};
+
 function initTabRouter() {
-  const panels = $$('.tab-panel');
-  const navBtns = $$('.nav-tab-btn, .mm-link');
 
-  function activateTab(tabId) {
-    if (!tabId) tabId = 'home';
-    tabId = tabId.replace(/^#/, '');
+  function activateTab(rawTabId) {
+    let tabId = (rawTabId || 'home').replace(/^#/, '').trim().toLowerCase();
+    if (TAB_ALIASES[tabId]) tabId = TAB_ALIASES[tabId];
+    if (!VALID_TABS.includes(tabId)) tabId = 'home';
 
-    // Map common aliases
-    if (tabId === 'tech-stack' || tabId === 'roadmap') tabId = 'architecture';
-
-    const targetPanel = document.getElementById(`tab-${tabId}`);
-    if (!targetPanel) tabId = 'home';
-
-    // Switch panels
-    panels.forEach(p => p.classList.remove('active'));
-    const activePanel = document.getElementById(`tab-${tabId}`);
-    if (activePanel) activePanel.classList.add('active');
-
-    // Update Nav Button Active States
-    navBtns.forEach(btn => {
-      const btnTab = (btn.dataset.tab || btn.getAttribute('href') || '').replace(/^#/, '');
-      btn.classList.toggle('active', btnTab === tabId);
+    // ── 1. Switch panel visibility ──
+    document.querySelectorAll('.tab-panel').forEach(p => {
+      const isTarget = p.id === `tab-${tabId}`;
+      p.style.display = isTarget ? 'block' : 'none';
+      p.classList.toggle('active', isTarget);
     });
 
-    // Resize Leaflet Map when Dashboard is revealed
-    if (tabId === 'dashboard' && gisMapInstance) {
+    // ── 2. Update all nav button active states ──
+    document.querySelectorAll('[data-tab]').forEach(btn => {
+      const btnTab = (btn.dataset.tab || '').toLowerCase();
+      btn.classList.toggle('active', btnTab === tabId);
+      if (btn.hasAttribute('aria-selected')) btn.setAttribute('aria-selected', btnTab === tabId);
+    });
+
+    // ── 3. Resize canvases/maps after panel is visible ──
+    if (tabId === 'simulator') {
+      requestAnimationFrame(() => {
+        if (typeof simFixed !== 'undefined' && simFixed) simFixed.resize();
+        if (typeof simAdaptive !== 'undefined' && simAdaptive) simAdaptive.resize();
+      });
+    }
+    if (tabId === 'dashboard') {
       setTimeout(() => {
-        gisMapInstance.invalidateSize();
-      }, 180);
+        if (typeof chart24hInstance !== 'undefined' && chart24hInstance) {
+          try { chart24hInstance.resize(); } catch(e) {}
+        }
+        if (typeof gisMapInstance !== 'undefined' && gisMapInstance) {
+          try { gisMapInstance.invalidateSize(true); } catch(e) {}
+        }
+      }, 80);
     }
 
-    // Scroll to top of the view
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // ── 4. Scroll to top ──
+    window.scrollTo({ top: 0, behavior: 'instant' });
 
-    // Update URL hash
-    if (window.location.hash !== `#${tabId}`) {
-      history.pushState(null, '', `#${tabId}`);
+    // ── 5. Update URL hash without scroll ──
+    const newHash = `#${tabId}`;
+    if (window.location.hash !== newHash) {
+      history.pushState({ tab: tabId }, '', newHash);
     }
+
+    // ── 6. Close mobile menu if open ──
+    const overlay = document.querySelector('.overlay');
+    const mm = document.querySelector('.mobile-menu');
+    if (overlay) overlay.hidden = true;
+    if (mm) mm.hidden = true;
   }
 
-  // Bind click handler across entire document for any [data-tab] or anchor tab links
+  // ── Direct binding on each nav-tab-btn (most reliable) ──
+  document.querySelectorAll('.nav-tab-btn, .mm-link').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const tabId = this.dataset.tab;
+      if (tabId) activateTab(tabId);
+    });
+  });
+
+  // ── Delegated click for [data-tab] elements (module cards, CTAs, breadcrumbs) ──
   document.addEventListener('click', e => {
-    const trigger = e.target.closest('[data-tab], .nav-tab-btn, .mm-link, a[href^="#"]');
+    const trigger = e.target.closest('[data-tab]');
     if (!trigger) return;
-
-    let tabId = trigger.dataset.tab;
-    if (!tabId && trigger.getAttribute('href')) {
-      const href = trigger.getAttribute('href');
-      if (href.startsWith('#')) {
-        tabId = href.substring(1);
-      }
-    }
-
-    if (tabId) {
-      if (tabId === 'home' || tabId === 'simulator' || tabId === 'ai-engine' || tabId === 'dashboard' || tabId === 'architecture' || tabId === 'tech-stack' || tabId === 'roadmap') {
-        e.preventDefault();
-        activateTab(tabId);
-
-        // Close mobile menu if open
-        const overlay = $('.overlay');
-        const mm = $('.mobile-menu');
-        if (overlay) overlay.hidden = true;
-        if (mm) mm.hidden = true;
-      }
+    // Skip nav-tab-btn and mm-link (already bound above)
+    if (trigger.classList.contains('nav-tab-btn') || trigger.classList.contains('mm-link')) return;
+    const tabId = trigger.dataset.tab;
+    if (tabId && (VALID_TABS.includes(tabId) || TAB_ALIASES[tabId])) {
+      e.preventDefault();
+      activateTab(tabId);
     }
   });
 
-  // Handle URL hash on load
+  // ── Keyboard shortcuts ──
+  document.addEventListener('keydown', e => {
+    // Skip if user is typing in an input
+    const tag = (e.target || e.srcElement).tagName;
+    if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
+    // Skip if modifier keys are held
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+    const key = e.key.toLowerCase();
+    if (KEY_SHORTCUTS[key]) {
+      activateTab(KEY_SHORTCUTS[key]);
+    }
+  });
+
+  // ── Handle initial URL hash on page load ──
   const initial = window.location.hash ? window.location.hash.substring(1) : 'home';
   activateTab(initial);
 
-  // Handle browser back/forward buttons
+  // ── Handle browser back/forward ──
   window.addEventListener('popstate', () => {
     const current = window.location.hash ? window.location.hash.substring(1) : 'home';
     activateTab(current);
   });
+
+  // Expose globally for external calls
+  window.signaliqGoTo = activateTab;
 }
 
 // ═══════════════════════════════════════════

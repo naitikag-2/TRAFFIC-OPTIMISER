@@ -106,12 +106,19 @@ class TrafficSim {
   }
   resize() {
     const rect = this.canvas.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    this.canvas.width = rect.width * dpr;
-    this.canvas.height = rect.height * dpr;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let w = rect.width;
+    let h = rect.height;
+    if (!w || w < 50) {
+      const parentRect = this.canvas.parentElement ? this.canvas.parentElement.getBoundingClientRect() : null;
+      w = (parentRect && parentRect.width > 50) ? parentRect.width : 540;
+      h = (parentRect && parentRect.height > 50) ? parentRect.height : 380;
+    }
+    this.canvas.width = w * dpr;
+    this.canvas.height = h * dpr;
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    this.w = rect.width;
-    this.h = rect.height;
+    this.w = w;
+    this.h = h;
     this.roadW = this.w * 0.15;
     this.cx = this.w / 2;
     this.cy = this.h / 2;
@@ -925,51 +932,86 @@ function initScrollReveal() {
   }, { threshold: 0.1 });
   sections.forEach(s => obs.observe(s));
 }
+const VALID_TABS = ['home', 'simulator', 'ai-engine', 'dashboard', 'architecture'];
+const TAB_ALIASES = { 'tech-stack': 'architecture', 'roadmap': 'architecture', 'impact': 'home' };
+const KEY_SHORTCUTS = {
+  '1': 'home',
+  '2': 'simulator',
+  '3': 'ai-engine',
+  '4': 'dashboard',
+  '5': 'architecture',
+  'h': 'home',
+  's': 'simulator',
+  'a': 'ai-engine',
+  'g': 'dashboard',
+  'r': 'architecture'
+};
 function initTabRouter() {
-  const panels = $$('.tab-panel');
-  const navBtns = $$('.nav-tab-btn, .mm-link');
-  function activateTab(tabId) {
-    if (!tabId) tabId = 'home';
-    tabId = tabId.replace(/^#/, '');
-    if (tabId === 'tech-stack' || tabId === 'roadmap') tabId = 'architecture';
-    const targetPanel = document.getElementById(`tab-${tabId}`);
-    if (!targetPanel) tabId = 'home';
-    panels.forEach(p => p.classList.remove('active'));
-    const activePanel = document.getElementById(`tab-${tabId}`);
-    if (activePanel) activePanel.classList.add('active');
-    navBtns.forEach(btn => {
-      const btnTab = (btn.dataset.tab || btn.getAttribute('href') || '').replace(/^#/, '');
-      btn.classList.toggle('active', btnTab === tabId);
+  function activateTab(rawTabId) {
+    let tabId = (rawTabId || 'home').replace(/^#/, '').trim().toLowerCase();
+    if (TAB_ALIASES[tabId]) tabId = TAB_ALIASES[tabId];
+    if (!VALID_TABS.includes(tabId)) tabId = 'home';
+    document.querySelectorAll('.tab-panel').forEach(p => {
+      const isTarget = p.id === `tab-${tabId}`;
+      p.style.display = isTarget ? 'block' : 'none';
+      p.classList.toggle('active', isTarget);
     });
-    if (tabId === 'dashboard' && gisMapInstance) {
+    document.querySelectorAll('[data-tab]').forEach(btn => {
+      const btnTab = (btn.dataset.tab || '').toLowerCase();
+      btn.classList.toggle('active', btnTab === tabId);
+      if (btn.hasAttribute('aria-selected')) btn.setAttribute('aria-selected', btnTab === tabId);
+    });
+    if (tabId === 'simulator') {
+      requestAnimationFrame(() => {
+        if (typeof simFixed !== 'undefined' && simFixed) simFixed.resize();
+        if (typeof simAdaptive !== 'undefined' && simAdaptive) simAdaptive.resize();
+      });
+    }
+    if (tabId === 'dashboard') {
       setTimeout(() => {
-        gisMapInstance.invalidateSize();
-      }, 180);
+        if (typeof chart24hInstance !== 'undefined' && chart24hInstance) {
+          try { chart24hInstance.resize(); } catch(e) {}
+        }
+        if (typeof gisMapInstance !== 'undefined' && gisMapInstance) {
+          try { gisMapInstance.invalidateSize(true); } catch(e) {}
+        }
+      }, 80);
     }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    if (window.location.hash !== `#${tabId}`) {
-      history.pushState(null, '', `#${tabId}`);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    const newHash = `#${tabId}`;
+    if (window.location.hash !== newHash) {
+      history.pushState({ tab: tabId }, '', newHash);
     }
+    const overlay = document.querySelector('.overlay');
+    const mm = document.querySelector('.mobile-menu');
+    if (overlay) overlay.hidden = true;
+    if (mm) mm.hidden = true;
   }
+  document.querySelectorAll('.nav-tab-btn, .mm-link').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const tabId = this.dataset.tab;
+      if (tabId) activateTab(tabId);
+    });
+  });
   document.addEventListener('click', e => {
-    const trigger = e.target.closest('[data-tab], .nav-tab-btn, .mm-link, a[href^="#"]');
+    const trigger = e.target.closest('[data-tab]');
     if (!trigger) return;
-    let tabId = trigger.dataset.tab;
-    if (!tabId && trigger.getAttribute('href')) {
-      const href = trigger.getAttribute('href');
-      if (href.startsWith('#')) {
-        tabId = href.substring(1);
-      }
+    if (trigger.classList.contains('nav-tab-btn') || trigger.classList.contains('mm-link')) return;
+    const tabId = trigger.dataset.tab;
+    if (tabId && (VALID_TABS.includes(tabId) || TAB_ALIASES[tabId])) {
+      e.preventDefault();
+      activateTab(tabId);
     }
-    if (tabId) {
-      if (tabId === 'home' || tabId === 'simulator' || tabId === 'ai-engine' || tabId === 'dashboard' || tabId === 'architecture' || tabId === 'tech-stack' || tabId === 'roadmap') {
-        e.preventDefault();
-        activateTab(tabId);
-        const overlay = $('.overlay');
-        const mm = $('.mobile-menu');
-        if (overlay) overlay.hidden = true;
-        if (mm) mm.hidden = true;
-      }
+  });
+  document.addEventListener('keydown', e => {
+    const tag = (e.target || e.srcElement).tagName;
+    if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    const key = e.key.toLowerCase();
+    if (KEY_SHORTCUTS[key]) {
+      activateTab(KEY_SHORTCUTS[key]);
     }
   });
   const initial = window.location.hash ? window.location.hash.substring(1) : 'home';
@@ -978,6 +1020,7 @@ function initTabRouter() {
     const current = window.location.hash ? window.location.hash.substring(1) : 'home';
     activateTab(current);
   });
+  window.signaliqGoTo = activateTab;
 }
 function initWebSocketBackend() {
   const wsUrl = (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws';

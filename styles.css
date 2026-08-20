@@ -97,10 +97,12 @@ img { display: block; max-width: 100%; }
    ═══════════════════════════════════════════ */
 .hero-viewport {
   position: relative;
-  height: 100vh;
-  height: 100dvh;
+  min-height: calc(100vh - 68px);
   overflow: hidden;
   background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 /* Background video + subtle light ambient grid overlay */
@@ -139,24 +141,31 @@ img { display: block; max-width: 100%; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100vh;
-  height: 100dvh;
-  padding: clamp(14px, 2.2vh, 24px) clamp(16px, 3vw, 32px);
-  overflow: hidden;
+  justify-content: space-between;
+  min-height: calc(100vh - 68px);
+  padding: clamp(20px, 3vh, 36px) clamp(16px, 3vw, 32px);
 }
 
 /* ═══════════════════════════════════════════
-   HEADER & NAVIGATION (Clean Light Glass)
+   HEADER & NAVIGATION (Clean Light Glass - Sticky)
    ═══════════════════════════════════════════ */
 .header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
-  max-width: 1080px;
-  gap: clamp(14px, 2vw, 24px);
+  padding: 0 clamp(16px, 4vw, 40px);
+  height: 60px;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid #E5EAF0;
+  box-shadow: 0 1px 0 #E5EAF0, 0 4px 24px rgba(15, 30, 60, 0.04);
+  z-index: 1000;
   flex-shrink: 0;
-  z-index: 20;
 }
 
 /* Brand Group */
@@ -164,23 +173,24 @@ img { display: block; max-width: 100%; }
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-shrink: 0;
 }
 .logo-btn {
   display: grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
   background: #FFFFFF;
-  border: 1px solid var(--border-subtle);
-  box-shadow: 0 2px 10px rgba(30, 60, 90, 0.06);
+  border: 1px solid #E5EAF0;
+  box-shadow: 0 1px 4px rgba(15, 30, 60, 0.08);
   flex-shrink: 0;
-  transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
 .logo-btn:hover {
-  transform: scale(1.04);
-  border-color: var(--accent-primary);
-  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.15);
+  transform: scale(1.05);
+  border-color: #2563EB;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.18);
 }
 .logo-btn img {
   width: 72%;
