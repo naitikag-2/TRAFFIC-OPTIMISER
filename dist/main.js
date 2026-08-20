@@ -533,23 +533,165 @@ function updateAIPanel() {
     conf.textContent = base.toFixed(1) + '%';
   }
 }
+const TIER1_CITIES = {
+  delhi: {
+    name: 'Delhi NCR',
+    center: [28.6139, 77.2090],
+    zoom: 12,
+    kpi: { wait: 42, delay: '-18.4s avg delay', throughput: 31, veh: '+110 veh/hour', co2: '-4,120 kg CO₂/day', fuel: '-1,850 L/day' },
+    fixedWait: [25, 22, 18, 15, 14, 16, 28, 52, 68, 58, 45, 48, 55, 50, 42, 38, 45, 62, 72, 55, 42, 35, 30, 27],
+    adaptiveWait: [12, 10, 8, 7, 7, 8, 14, 29, 36, 30, 24, 25, 29, 26, 22, 20, 24, 33, 38, 28, 22, 18, 15, 13],
+    corridors: [
+      { path: [[28.6315, 77.2167], [28.6289, 77.2410], [28.5672, 77.2100]], color: '#2563EB', dash: '6, 8' },
+      { path: [[28.5921, 77.1691], [28.4800, 77.0500]], color: '#16A34A', dash: null }
+    ],
+    junctions: [
+      { id: 'del-cp', name: 'Connaught Place Outer Circle', coords: [28.6315, 77.2167], status: 'Coordinated Flow', badgeClass: 'green', wait: '14.2s', throughput: '168 veh/h', cams: '4 Live Cams', mode: 'RL Adaptive', density: { N: 'low', S: 'medium', E: 'low', W: 'medium' } },
+      { id: 'del-ito', name: 'ITO Intersection (Ring Rd)', coords: [28.6289, 77.2410], status: 'High Traffic Surge', badgeClass: 'red', wait: '44.6s', throughput: '78 veh/h', cams: '6 Live Cams', mode: 'Legacy Baseline', density: { N: 'high', S: 'high', E: 'high', W: 'medium' } },
+      { id: 'del-aiims', name: 'AIIMS Ring Road Flyover', coords: [28.5672, 77.2100], status: 'Moderate Flow', badgeClass: 'yellow', wait: '24.1s', throughput: '124 veh/h', cams: '4 Live Cams', mode: 'RL Adaptive', density: { N: 'medium', S: 'medium', E: 'high', W: 'low' } },
+      { id: 'del-dhaula', name: 'Dhaula Kuan Interchange', coords: [28.5921, 77.1691], status: 'Green Wave Corridor', badgeClass: 'green', wait: '9.8s', throughput: '190 veh/h', cams: '5 Live Cams', mode: 'RL Adaptive', density: { N: 'low', S: 'low', E: 'low', W: 'medium' } },
+      { id: 'del-nh48', name: 'NH-48 Cyber City Corridor', coords: [28.4800, 77.0500], status: 'Free Flow AI', badgeClass: 'green', wait: '8.5s', throughput: '210 veh/h', cams: '6 Live Cams', mode: 'RL Adaptive', density: { N: 'low', S: 'low', E: 'low', W: 'low' } }
+    ]
+  },
+  bengaluru: {
+    name: 'Bengaluru',
+    center: [12.9650, 77.6200],
+    zoom: 12,
+    kpi: { wait: 48, delay: '-22.6s avg delay', throughput: 36, veh: '+140 veh/hour', co2: '-5,280 kg CO₂/day', fuel: '-2,410 L/day' },
+    fixedWait: [20, 18, 15, 12, 12, 18, 35, 68, 85, 74, 52, 50, 58, 54, 48, 44, 56, 78, 88, 64, 48, 38, 30, 24],
+    adaptiveWait: [10, 9, 7, 6, 6, 9, 18, 36, 42, 38, 27, 26, 30, 28, 25, 23, 29, 40, 44, 32, 25, 20, 15, 12],
+    corridors: [
+      { path: [[12.9177, 77.6238], [12.9352, 77.6245], [12.9734, 77.6205]], color: '#2563EB', dash: '6, 8' },
+      { path: [[12.9569, 77.7011], [12.9352, 77.6245]], color: '#16A34A', dash: null }
+    ],
+    junctions: [
+      { id: 'blr-silk', name: 'Silk Board Junction (Bottleneck)', coords: [12.9177, 77.6238], status: 'Peak Congestion', badgeClass: 'red', wait: '52.4s', throughput: '64 veh/h', cams: '6 Live Cams', mode: 'Legacy Baseline', density: { N: 'high', S: 'high', E: 'high', W: 'high' } },
+      { id: 'blr-sony', name: 'Sony World Signal (Koramangala)', coords: [12.9352, 77.6245], status: 'Adaptive Split', badgeClass: 'yellow', wait: '21.5s', throughput: '132 veh/h', cams: '4 Live Cams', mode: 'RL Adaptive', density: { N: 'medium', S: 'medium', E: 'medium', W: 'high' } },
+      { id: 'blr-marath', name: 'Marathahalli Outer Ring Rd', coords: [12.9569, 77.7011], status: 'Green Wave Active', badgeClass: 'green', wait: '11.8s', throughput: '175 veh/h', cams: '4 Live Cams', mode: 'RL Adaptive', density: { N: 'low', S: 'medium', E: 'low', W: 'low' } },
+      { id: 'blr-hebbal', name: 'Hebbal Flyover Junction', coords: [13.0358, 77.5970], status: 'Optimal Flow', badgeClass: 'green', wait: '13.2s', throughput: '188 veh/h', cams: '5 Live Cams', mode: 'RL Adaptive', density: { N: 'low', S: 'low', E: 'medium', W: 'low' } },
+      { id: 'blr-trinity', name: 'Trinity Circle (MG Road)', coords: [12.9734, 77.6205], status: 'Optimized Wave', badgeClass: 'green', wait: '10.4s', throughput: '158 veh/h', cams: '3 Live Cams', mode: 'RL Adaptive', density: { N: 'low', S: 'low', E: 'low', W: 'low' } }
+    ]
+  },
+  mumbai: {
+    name: 'Mumbai',
+    center: [19.0400, 72.8600],
+    zoom: 12,
+    kpi: { wait: 45, delay: '-20.1s avg delay', throughput: 34, veh: '+128 veh/hour', co2: '-4,890 kg CO₂/day', fuel: '-2,150 L/day' },
+    fixedWait: [22, 18, 16, 14, 14, 18, 32, 64, 78, 68, 50, 52, 56, 52, 46, 42, 52, 70, 82, 60, 46, 36, 28, 24],
+    adaptiveWait: [11, 9, 8, 7, 7, 9, 16, 32, 39, 34, 26, 27, 29, 27, 24, 22, 27, 36, 41, 30, 24, 19, 14, 12],
+    corridors: [
+      { path: [[19.0330, 72.8170], [19.0600, 72.8650], [19.1136, 72.8697]], color: '#2563EB', dash: '6, 8' },
+      { path: [[18.9774, 72.8105], [19.0178, 72.8478]], color: '#16A34A', dash: null }
+    ],
+    junctions: [
+      { id: 'mum-bkc', name: 'BKC Connector Junction', coords: [19.0600, 72.8650], status: 'RL Optimized Flow', badgeClass: 'green', wait: '11.5s', throughput: '185 veh/h', cams: '5 Live Cams', mode: 'RL Adaptive', density: { N: 'low', S: 'medium', E: 'low', W: 'medium' } },
+      { id: 'mum-bwsl', name: 'Bandra-Worli Sea Link Toll Plaza', coords: [19.0330, 72.8170], status: 'High Throughput', badgeClass: 'green', wait: '8.9s', throughput: '220 veh/h', cams: '6 Live Cams', mode: 'RL Adaptive', density: { N: 'low', S: 'low', E: 'low', W: 'low' } },
+      { id: 'mum-dadar', name: 'Dadar TT Circle (Central Hub)', coords: [19.0178, 72.8478], status: 'Heavy Density', badgeClass: 'red', wait: '48.2s', throughput: '72 veh/h', cams: '4 Live Cams', mode: 'Legacy Baseline', density: { N: 'high', S: 'high', E: 'high', W: 'medium' } },
+      { id: 'mum-andheri', name: 'Andheri WEH Flyover Interchange', coords: [19.1136, 72.8697], status: 'Moderate Flow', badgeClass: 'yellow', wait: '25.6s', throughput: '114 veh/h', cams: '4 Live Cams', mode: 'RL Adaptive', density: { N: 'medium', S: 'medium', E: 'high', W: 'low' } },
+      { id: 'mum-haji', name: 'Haji Ali Seaface Signal', coords: [18.9774, 72.8105], status: 'Green Wave Flow', badgeClass: 'green', wait: '13.4s', throughput: '145 veh/h', cams: '3 Live Cams', mode: 'RL Adaptive', density: { N: 'low', S: 'low', E: 'medium', W: 'low' } }
+    ]
+  },
+  hyderabad: {
+    name: 'Hyderabad',
+    center: [17.4350, 78.3950],
+    zoom: 12,
+    kpi: { wait: 39, delay: '-16.8s avg delay', throughput: 29, veh: '+98 veh/hour', co2: '-3,850 kg CO₂/day', fuel: '-1,720 L/day' },
+    fixedWait: [20, 16, 14, 12, 12, 15, 26, 48, 62, 54, 42, 44, 48, 45, 38, 35, 42, 56, 68, 50, 38, 30, 25, 22],
+    adaptiveWait: [10, 8, 7, 6, 6, 8, 13, 24, 31, 27, 21, 22, 24, 23, 19, 18, 21, 28, 34, 25, 19, 15, 13, 11],
+    corridors: [
+      { path: [[17.4483, 78.3800], [17.4399, 78.3489], [17.4325, 78.4070]], color: '#2563EB', dash: '6, 8' }
+    ],
+    junctions: [
+      { id: 'hyd-cyber', name: 'Hitec City Cyber Towers Junction', coords: [17.4483, 78.3800], status: 'Adaptive AI Wave', badgeClass: 'green', wait: '12.1s', throughput: '178 veh/h', cams: '5 Live Cams', mode: 'RL Adaptive', density: { N: 'low', S: 'medium', E: 'low', W: 'low' } },
+      { id: 'hyd-gachi', name: 'Gachibowli Outer Ring Rd Signal', coords: [17.4399, 78.3489], status: 'Free Flow AI', badgeClass: 'green', wait: '9.4s', throughput: '195 veh/h', cams: '4 Live Cams', mode: 'RL Adaptive', density: { N: 'low', S: 'low', E: 'low', W: 'low' } },
+      { id: 'hyd-jubilee', name: 'Jubilee Hills Checkpost', coords: [17.4325, 78.4070], status: 'Moderate Surge', badgeClass: 'yellow', wait: '23.8s', throughput: '120 veh/h', cams: '4 Live Cams', mode: 'RL Adaptive', density: { N: 'medium', S: 'medium', E: 'high', W: 'low' } },
+      { id: 'hyd-panja', name: 'Panjagutta Central Flyover', coords: [17.4265, 78.4528], status: 'High Queue Area', badgeClass: 'red', wait: '39.8s', throughput: '86 veh/h', cams: '4 Live Cams', mode: 'Legacy Baseline', density: { N: 'high', S: 'high', E: 'medium', W: 'medium' } }
+    ]
+  },
+  chennai: {
+    name: 'Chennai',
+    center: [13.0400, 80.2200],
+    zoom: 12,
+    kpi: { wait: 38, delay: '-15.9s avg delay', throughput: 28, veh: '+95 veh/hour', co2: '-3,620 kg CO₂/day', fuel: '-1,610 L/day' },
+    fixedWait: [20, 16, 14, 12, 12, 16, 28, 50, 64, 55, 42, 45, 48, 44, 38, 36, 44, 58, 66, 52, 38, 32, 26, 22],
+    adaptiveWait: [10, 8, 7, 6, 6, 8, 14, 25, 32, 28, 21, 23, 24, 22, 19, 18, 22, 29, 33, 26, 19, 16, 13, 11],
+    corridors: [
+      { path: [[13.0569, 80.2525], [13.0067, 80.2016], [12.9350, 80.2300]], color: '#2563EB', dash: '6, 8' }
+    ],
+    junctions: [
+      { id: 'che-anna', name: 'Anna Salai (Gemini Flyover)', coords: [13.0569, 80.2525], status: 'Green Wave Corridor', badgeClass: 'green', wait: '11.2s', throughput: '172 veh/h', cams: '5 Live Cams', mode: 'RL Adaptive', density: { N: 'low', S: 'medium', E: 'low', W: 'low' } },
+      { id: 'che-kathi', name: 'Kathipara Cloverleaf Junction (Guindy)', coords: [13.0067, 80.2016], status: 'High Traffic Hub', badgeClass: 'yellow', wait: '24.2s', throughput: '128 veh/h', cams: '6 Live Cams', mode: 'RL Adaptive', density: { N: 'medium', S: 'high', E: 'medium', W: 'low' } },
+      { id: 'che-omr', name: 'OMR IT Express Corridor', coords: [12.9350, 80.2300], status: 'Free Flow AI', badgeClass: 'green', wait: '9.1s', throughput: '198 veh/h', cams: '4 Live Cams', mode: 'RL Adaptive', density: { N: 'low', S: 'low', E: 'low', W: 'low' } },
+      { id: 'che-tnagar', name: 'T. Nagar Panagal Park Signal', coords: [13.0418, 80.2341], status: 'Shopping Bottleneck', badgeClass: 'red', wait: '42.5s', throughput: '75 veh/h', cams: '3 Live Cams', mode: 'Legacy Baseline', density: { N: 'high', S: 'high', E: 'high', W: 'medium' } }
+    ]
+  },
+  kolkata: {
+    name: 'Kolkata',
+    center: [22.5600, 88.3700],
+    zoom: 12,
+    kpi: { wait: 44, delay: '-19.2s avg delay', throughput: 32, veh: '+115 veh/hour', co2: '-4,450 kg CO₂/day', fuel: '-1,980 L/day' },
+    fixedWait: [24, 20, 16, 14, 14, 16, 30, 56, 72, 62, 48, 50, 54, 50, 44, 40, 48, 66, 76, 58, 44, 36, 30, 26],
+    adaptiveWait: [12, 10, 8, 7, 7, 8, 15, 28, 36, 31, 24, 25, 27, 25, 22, 20, 24, 33, 38, 29, 22, 18, 15, 13],
+    corridors: [
+      { path: [[22.5390, 88.3650], [22.5855, 88.3468], [22.5180, 88.3980]], color: '#2563EB', dash: '6, 8' }
+    ],
+    junctions: [
+      { id: 'kol-park', name: 'Park Circus 7-Point Crossing', coords: [22.5390, 88.3650], status: 'Multi-Way Bottleneck', badgeClass: 'red', wait: '46.8s', throughput: '70 veh/h', cams: '6 Live Cams', mode: 'Legacy Baseline', density: { N: 'high', S: 'high', E: 'high', W: 'high' } },
+      { id: 'kol-howrah', name: 'Howrah Bridge Strand Approach', coords: [22.5855, 88.3468], status: 'Adaptive Coordinated', badgeClass: 'yellow', wait: '26.4s', throughput: '112 veh/h', cams: '5 Live Cams', mode: 'RL Adaptive', density: { N: 'medium', S: 'high', E: 'medium', W: 'low' } },
+      { id: 'kol-em', name: 'EM Bypass (Ruby Hospital Signal)', coords: [22.5180, 88.3980], status: 'Green Wave Corridor', badgeClass: 'green', wait: '10.6s', throughput: '182 veh/h', cams: '4 Live Cams', mode: 'RL Adaptive', density: { N: 'low', S: 'medium', E: 'low', W: 'low' } },
+      { id: 'kol-esplanade', name: 'Esplanade Central Signal', coords: [22.5645, 88.3518], status: 'Optimal AI Transit', badgeClass: 'green', wait: '13.8s', throughput: '154 veh/h', cams: '4 Live Cams', mode: 'RL Adaptive', density: { N: 'low', S: 'low', E: 'medium', W: 'low' } }
+    ]
+  },
+  pune: {
+    name: 'Pune',
+    center: [18.5204, 73.8567],
+    zoom: 12,
+    kpi: { wait: 41, delay: '-17.5s avg delay', throughput: 30, veh: '+105 veh/hour', co2: '-3,950 kg CO₂/day', fuel: '-1,780 L/day' },
+    fixedWait: [22, 18, 15, 13, 13, 16, 28, 52, 66, 56, 44, 46, 50, 46, 40, 37, 46, 60, 70, 54, 40, 34, 28, 24],
+    adaptiveWait: [11, 9, 8, 7, 7, 8, 14, 26, 33, 28, 22, 23, 25, 23, 20, 19, 23, 30, 35, 27, 20, 17, 14, 12],
+    corridors: [
+      { path: [[18.5308, 73.8474], [18.5538, 73.8242], [18.5089, 73.7925]], color: '#2563EB', dash: '6, 8' }
+    ],
+    junctions: [
+      { id: 'pun-univ', name: 'Pune University Circle', coords: [18.5538, 73.8242], status: 'Green Wave Flow', badgeClass: 'green', wait: '12.8s', throughput: '162 veh/h', cams: '4 Live Cams', mode: 'RL Adaptive', density: { N: 'low', S: 'medium', E: 'low', W: 'low' } },
+      { id: 'pun-shivaji', name: 'Shivajinagar Sancheti Crossing', coords: [18.5308, 73.8474], status: 'Moderate Traffic', badgeClass: 'yellow', wait: '23.4s', throughput: '122 veh/h', cams: '4 Live Cams', mode: 'RL Adaptive', density: { N: 'medium', S: 'medium', E: 'high', W: 'low' } },
+      { id: 'pun-chandani', name: 'Chandani Chowk Interchange (Bavdhan)', coords: [18.5089, 73.7925], status: 'Free Flow AI', badgeClass: 'green', wait: '9.2s', throughput: '189 veh/h', cams: '5 Live Cams', mode: 'RL Adaptive', density: { N: 'low', S: 'low', E: 'low', W: 'low' } },
+      { id: 'pun-swargate', name: 'Swargate Bus Terminal Chowk', coords: [18.5018, 73.8582], status: 'Transit Bottleneck', badgeClass: 'red', wait: '43.2s', throughput: '76 veh/h', cams: '4 Live Cams', mode: 'Legacy Baseline', density: { N: 'high', S: 'high', E: 'high', W: 'medium' } }
+    ]
+  },
+  ahmedabad: {
+    name: 'Ahmedabad',
+    center: [23.0300, 72.5400],
+    zoom: 12,
+    kpi: { wait: 37, delay: '-15.2s avg delay', throughput: 27, veh: '+90 veh/hour', co2: '-3,480 kg CO₂/day', fuel: '-1,560 L/day' },
+    fixedWait: [20, 16, 14, 12, 12, 15, 26, 48, 60, 52, 40, 42, 46, 42, 36, 34, 42, 54, 64, 48, 36, 30, 24, 21],
+    adaptiveWait: [10, 8, 7, 6, 6, 8, 13, 24, 30, 26, 20, 21, 23, 21, 18, 17, 21, 27, 32, 24, 18, 15, 12, 11],
+    corridors: [
+      { path: [[23.0298, 72.5074], [23.0360, 72.5620], [23.0450, 72.5200]], color: '#2563EB', dash: '6, 8' }
+    ],
+    junctions: [
+      { id: 'ahm-iskcon', name: 'SG Highway Iskcon Cross Road', coords: [23.0298, 72.5074], status: 'High Speed AI Wave', badgeClass: 'green', wait: '10.2s', throughput: '192 veh/h', cams: '5 Live Cams', mode: 'RL Adaptive', density: { N: 'low', S: 'low', E: 'medium', W: 'low' } },
+      { id: 'ahm-ashram', name: 'Income Tax Junction (Ashram Rd)', coords: [23.0360, 72.5620], status: 'Moderate Riverfront', badgeClass: 'yellow', wait: '22.1s', throughput: '126 veh/h', cams: '4 Live Cams', mode: 'RL Adaptive', density: { N: 'medium', S: 'medium', E: 'medium', W: 'low' } },
+      { id: 'ahm-pakwan', name: 'Pakwan Cross Road (SG Highway)', coords: [23.0450, 72.5200], status: 'Optimal Coordinated', badgeClass: 'green', wait: '11.4s', throughput: '168 veh/h', cams: '4 Live Cams', mode: 'RL Adaptive', density: { N: 'low', S: 'low', E: 'low', W: 'low' } },
+      { id: 'ahm-geeta', name: 'Geeta Mandir Central Signal', coords: [23.0125, 72.5890], status: 'Dense Market Queue', badgeClass: 'red', wait: '40.5s', throughput: '80 veh/h', cams: '3 Live Cams', mode: 'Legacy Baseline', density: { N: 'high', S: 'high', E: 'high', W: 'medium' } }
+    ]
+  }
+};
+let chart24hInstance = null;
+let currentCityKey = 'delhi';
 function initChart() {
   const el = document.getElementById('chart-24h');
   if (!el) return;
   const hours = Array.from({ length: 24 }, (_, i) => `${String(i).padStart(2, '0')}:00`);
-  const fixedData = [
-    25, 22, 18, 15, 14, 16, 28, 52, 68, 58, 45, 48,
-    55, 50, 42, 38, 45, 62, 72, 55, 42, 35, 30, 27
-  ];
-  const adaptiveData = fixedData.map(v => Math.max(8, Math.round(v * (0.46 + Math.random() * 0.1))));
-  new Chart(el, {
+  const city = TIER1_CITIES[currentCityKey] || TIER1_CITIES.delhi;
+  chart24hInstance = new Chart(el, {
     type: 'line',
     data: {
       labels: hours,
       datasets: [
         {
           label: 'Fixed-Time (Baseline)',
-          data: fixedData,
+          data: [...city.fixedWait],
           borderColor: '#64748B',
           backgroundColor: 'rgba(100, 116, 139, 0.08)',
           fill: true,
@@ -561,7 +703,7 @@ function initChart() {
         },
         {
           label: 'SIGNAL-IQ Adaptive',
-          data: adaptiveData,
+          data: [...city.adaptiveWait],
           borderColor: '#2563EB',
           backgroundColor: 'rgba(37, 99, 235, 0.12)',
           fill: true,
@@ -602,68 +744,22 @@ function initChart() {
     },
   });
 }
+let gisMapInstance = null;
+let gisMarkerLayers = [];
+let gisCorridorLayers = [];
 function initRealLifeMap() {
   const mapEl = document.getElementById('real-life-map');
   if (!mapEl || typeof L === 'undefined') return;
-  const junctions = [
-    {
-      id: 'sec-5',
-      name: 'Sector 5 Junction',
-      coords: [28.4595, 77.0266],
-      status: 'Low Congestion',
-      badgeClass: 'green',
-      wait: '12.4s',
-      throughput: '142 veh/h',
-      cams: '3 Live Cams',
-      mode: 'RL Adaptive',
-      density: { N: 'low', S: 'low', E: 'medium', W: 'low' }
-    },
-    {
-      id: 'mg-road',
-      name: 'MG Road Crossing',
-      coords: [28.4700, 77.0350],
-      status: 'Moderate Flow',
-      badgeClass: 'yellow',
-      wait: '22.8s',
-      throughput: '118 veh/h',
-      cams: '4 Live Cams',
-      mode: 'RL Adaptive',
-      density: { N: 'medium', S: 'medium', E: 'high', W: 'medium' }
-    },
-    {
-      id: 'city-center',
-      name: 'City Center Signal',
-      coords: [28.4500, 77.0400],
-      status: 'High Congestion',
-      badgeClass: 'red',
-      wait: '41.2s',
-      throughput: '84 veh/h',
-      cams: '4 Live Cams',
-      mode: 'Legacy Baseline',
-      density: { N: 'high', S: 'high', E: 'high', W: 'medium' }
-    },
-    {
-      id: 'nh-48',
-      name: 'NH-48 Interchange',
-      coords: [28.4800, 77.0500],
-      status: 'Free Flow',
-      badgeClass: 'green',
-      wait: '8.5s',
-      throughput: '195 veh/h',
-      cams: '6 Live Cams',
-      mode: 'RL Adaptive',
-      density: { N: 'low', S: 'low', E: 'low', W: 'low' }
-    }
-  ];
-  const map = L.map('real-life-map', {
-    center: [28.4640, 77.0360],
-    zoom: 13,
+  const city = TIER1_CITIES[currentCityKey];
+  gisMapInstance = L.map('real-life-map', {
+    center: city.center,
+    zoom: city.zoom,
     zoomControl: false,
     attributionControl: false
   });
   const streetLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     maxZoom: 19
-  }).addTo(map);
+  }).addTo(gisMapInstance);
   const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
     maxZoom: 18
   });
@@ -673,37 +769,44 @@ function initRealLifeMap() {
     btnStreet.addEventListener('click', () => {
       btnStreet.classList.add('active');
       btnSat.classList.remove('active');
-      map.removeLayer(satelliteLayer);
-      map.addLayer(streetLayer);
+      gisMapInstance.removeLayer(satelliteLayer);
+      gisMapInstance.addLayer(streetLayer);
     });
     btnSat.addEventListener('click', () => {
       btnSat.classList.add('active');
       btnStreet.classList.remove('active');
-      map.removeLayer(streetLayer);
-      map.addLayer(satelliteLayer);
+      gisMapInstance.removeLayer(streetLayer);
+      gisMapInstance.addLayer(satelliteLayer);
     });
   }
-  const corridor1 = [
-    [28.4595, 77.0266],
-    [28.4700, 77.0350],
-    [28.4800, 77.0500]
-  ];
-  L.polyline(corridor1, {
-    color: '#2563EB',
-    weight: 4,
-    opacity: 0.8,
-    dashArray: '6, 8'
-  }).addTo(map);
-  const corridor2 = [
-    [28.4700, 77.0350],
-    [28.4500, 77.0400]
-  ];
-  L.polyline(corridor2, {
-    color: '#16A34A',
-    weight: 4,
-    opacity: 0.75
-  }).addTo(map);
-  junctions.forEach((j, idx) => {
+  renderCityGis(currentCityKey);
+  const citySelect = document.getElementById('city-select');
+  if (citySelect) {
+    citySelect.addEventListener('change', (e) => {
+      currentCityKey = e.target.value;
+      switchCity(currentCityKey);
+    });
+  }
+}
+function renderCityGis(cityKey) {
+  const city = TIER1_CITIES[cityKey];
+  if (!city || !gisMapInstance) return;
+  gisMarkerLayers.forEach(layer => gisMapInstance.removeLayer(layer));
+  gisMarkerLayers = [];
+  gisCorridorLayers.forEach(layer => gisMapInstance.removeLayer(layer));
+  gisCorridorLayers = [];
+  if (city.corridors) {
+    city.corridors.forEach(c => {
+      const poly = L.polyline(c.path, {
+        color: c.color,
+        weight: 4,
+        opacity: 0.8,
+        dashArray: c.dash
+      }).addTo(gisMapInstance);
+      gisCorridorLayers.push(poly);
+    });
+  }
+  city.junctions.forEach((j, idx) => {
     const iconHtml = `<div class="gis-pin-marker ${j.badgeClass}"><i class="fa-solid fa-traffic-light"></i></div>`;
     const customIcon = L.divIcon({
       html: iconHtml,
@@ -711,7 +814,7 @@ function initRealLifeMap() {
       iconSize: [32, 32],
       iconAnchor: [16, 16]
     });
-    const marker = L.marker(j.coords, { icon: customIcon }).addTo(map);
+    const marker = L.marker(j.coords, { icon: customIcon }).addTo(gisMapInstance);
     const popupHtml = `
       <div class="popup-header">${j.name}</div>
       <span class="popup-badge ${j.badgeClass}">● ${j.status}</span>
@@ -724,35 +827,73 @@ function initRealLifeMap() {
     marker.on('click', () => {
       selectGisJunction(j.id);
     });
+    gisMarkerLayers.push(marker);
     if (idx === 0) {
       setTimeout(() => marker.openPopup(), 600);
+      selectGisJunction(j.id);
     }
   });
-  window.selectGisJunction = function(id) {
-    const item = junctions.find(j => j.id === id);
-    if (!item) return;
-    const elName = document.getElementById('inspector-name');
-    const elStatus = document.getElementById('inspector-status');
-    const elWait = document.getElementById('inspector-wait');
-    const elFlow = document.getElementById('inspector-flow');
-    const elCam = document.getElementById('inspector-cam');
-    const elMode = document.getElementById('inspector-mode');
-    if (elName) elName.textContent = item.name;
-    if (elStatus) elStatus.innerHTML = `<span class="popup-badge ${item.badgeClass}">● ${item.status}</span>`;
-    if (elWait) elWait.textContent = item.wait;
-    if (elFlow) elFlow.textContent = item.throughput;
-    if (elCam) elCam.textContent = item.cams;
-    if (elMode) elMode.textContent = item.mode;
-    if (simFixed && simAdaptive && item.density) {
-      simFixed.density = { ...item.density };
-      simAdaptive.density = { ...item.density };
-      $$('.density-group select').forEach(sel => {
-        const dir = sel.dataset.dir;
-        if (dir && item.density[dir]) sel.value = item.density[dir];
-      });
-    }
-  };
 }
+function switchCity(cityKey) {
+  const city = TIER1_CITIES[cityKey];
+  if (!city) return;
+  if (gisMapInstance) {
+    gisMapInstance.flyTo(city.center, city.zoom, { duration: 1.5 });
+    renderCityGis(cityKey);
+  }
+  if (chart24hInstance) {
+    chart24hInstance.data.datasets[0].data = [...city.fixedWait];
+    chart24hInstance.data.datasets[1].data = [...city.adaptiveWait];
+    chart24hInstance.update();
+  }
+  const kpiCards = $$('.kpi-card');
+  if (kpiCards.length >= 4) {
+    const val0 = kpiCards[0].querySelector('.kpi-val');
+    const tr0 = kpiCards[0].querySelector('.kpi-trend');
+    if (val0) { val0.dataset.target = city.kpi.wait; val0.textContent = city.kpi.wait + '%'; }
+    if (tr0) tr0.innerHTML = `<i class="fa-solid fa-arrow-trend-down"></i> ${city.kpi.delay}`;
+    const val1 = kpiCards[1].querySelector('.kpi-val');
+    const tr1 = kpiCards[1].querySelector('.kpi-trend');
+    if (val1) { val1.dataset.target = city.kpi.throughput; val1.textContent = city.kpi.throughput + '%'; }
+    if (tr1) tr1.innerHTML = `<i class="fa-solid fa-arrow-trend-up"></i> ${city.kpi.veh}`;
+    const val2 = kpiCards[2].querySelector('.kpi-val');
+    const tr2 = kpiCards[2].querySelector('.kpi-trend');
+    if (val2) { val2.dataset.target = city.kpi.wait - 14; val2.textContent = (city.kpi.wait - 14) + '%'; }
+    if (tr2) tr2.innerHTML = `<i class="fa-solid fa-arrow-trend-down"></i> ${city.kpi.co2}`;
+    const val3 = kpiCards[3].querySelector('.kpi-val');
+    const tr3 = kpiCards[3].querySelector('.kpi-trend');
+    if (val3) { val3.dataset.target = Math.round(city.kpi.wait * 0.45); val3.textContent = Math.round(city.kpi.wait * 0.45) + '%'; }
+    if (tr3) tr3.innerHTML = `<i class="fa-solid fa-arrow-trend-down"></i> ${city.kpi.fuel}`;
+  }
+}
+window.selectGisJunction = function(id) {
+  let item = null;
+  for (const cityKey in TIER1_CITIES) {
+    const found = TIER1_CITIES[cityKey].junctions.find(j => j.id === id);
+    if (found) { item = found; break; }
+  }
+  if (!item) return;
+  const elName = document.getElementById('inspector-name');
+  const elStatus = document.getElementById('inspector-status');
+  const elWait = document.getElementById('inspector-wait');
+  const elFlow = document.getElementById('inspector-flow');
+  const elCam = document.getElementById('inspector-cam');
+  const elMode = document.getElementById('inspector-mode');
+  if (elName) elName.textContent = item.name;
+  if (elStatus) elStatus.innerHTML = `<span class="popup-badge ${item.badgeClass}">● ${item.status}</span>`;
+  if (elWait) elWait.textContent = item.wait;
+  if (elFlow) elFlow.textContent = item.throughput;
+  if (elCam) elCam.textContent = item.cams;
+  if (elMode) elMode.textContent = item.mode;
+  if (simFixed && simAdaptive && item.density) {
+    simFixed.density = { ...item.density };
+    simAdaptive.density = { ...item.density };
+    $$('.density-group select').forEach(sel => {
+      const dir = sel.dataset.dir;
+      if (dir && item.density[dir]) sel.value = item.density[dir];
+    });
+  }
+};
 function initInferenceBenchmark() {
   const btn = document.getElementById('btn-test-inference');
   const log = document.getElementById('inference-result-log');

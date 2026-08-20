@@ -354,10 +354,27 @@
     
     <section id="dashboard" class="section">
       <div class="section-inner">
-        <div class="section-header-wrap">
-          <span class="section-tag"><i class="fa-solid fa-chart-pie"></i> City Command Center</span>
-          <h2 class="section-title">City-Wide Intersection Telemetry</h2>
-          <p class="section-sub">24-hour comparative municipal metrics and live metropolitan junction monitor</p>
+        <div class="section-header-wrap city-header-flex">
+          <div>
+            <span class="section-tag"><i class="fa-solid fa-chart-pie"></i> City Command Center</span>
+            <h2 class="section-title">City-Wide Intersection Telemetry</h2>
+            <p class="section-sub">24-hour comparative municipal metrics and live metropolitan junction monitor</p>
+          </div>
+          <div class="city-selector-box">
+            <label for="city-select"><i class="fa-solid fa-city"></i> Select Tier-1 Metropolis:</label>
+            <div class="city-select-wrapper">
+              <select id="city-select" class="city-dropdown" aria-label="Select Indian Tier-1 City">
+                <option value="delhi" selected>🇮🇳 Delhi NCR (Connaught Pl / MG Rd / ITO / NH-48)</option>
+                <option value="bengaluru">🇮🇳 Bengaluru (Silk Board / Koramangala / Hebbal / MG Rd)</option>
+                <option value="mumbai">🇮🇳 Mumbai (Bandra-Worli / BKC / Dadar TT / Andheri WEH)</option>
+                <option value="hyderabad">🇮🇳 Hyderabad (Hitec City / Gachibowli / Jubilee Hills / Begumpet)</option>
+                <option value="chennai">🇮🇳 Chennai (Anna Salai / Kathipara / OMR / Central)</option>
+                <option value="kolkata">🇮🇳 Kolkata (Park Circus / Howrah / EM Bypass / Esplanade)</option>
+                <option value="pune">🇮🇳 Pune (University Circle / Shivajinagar / Chandani Chowk)</option>
+                <option value="ahmedabad">🇮🇳 Ahmedabad (SG Highway / Iskcon / Ashram Rd / Pakwan)</option>
+              </select>
+            </div>
+          </div>
         </div>
 
         
