@@ -602,26 +602,156 @@ function initChart() {
     },
   });
 }
-function initMapInspector() {
-  const pins = $$('.map-pin');
-  pins.forEach(pin => {
-    pin.addEventListener('click', () => {
-      pins.forEach(p => p.classList.remove('active-pin'));
-      pin.classList.add('active-pin');
-      const name = pin.dataset.name;
-      const status = pin.dataset.status;
-      const wait = pin.dataset.wait;
-      const flow = pin.dataset.thru;
-      const elName = document.getElementById('inspector-name');
-      const elStatus = document.getElementById('inspector-status');
-      const elWait = document.getElementById('inspector-wait');
-      const elFlow = document.getElementById('inspector-flow');
-      if (elName) elName.textContent = name;
-      if (elStatus) elStatus.textContent = status;
-      if (elWait) elWait.textContent = wait;
-      if (elFlow) elFlow.textContent = flow;
-    });
+function initRealLifeMap() {
+  const mapEl = document.getElementById('real-life-map');
+  if (!mapEl || typeof L === 'undefined') return;
+  const junctions = [
+    {
+      id: 'sec-5',
+      name: 'Sector 5 Junction',
+      coords: [28.4595, 77.0266],
+      status: 'Low Congestion',
+      badgeClass: 'green',
+      wait: '12.4s',
+      throughput: '142 veh/h',
+      cams: '3 Live Cams',
+      mode: 'RL Adaptive',
+      density: { N: 'low', S: 'low', E: 'medium', W: 'low' }
+    },
+    {
+      id: 'mg-road',
+      name: 'MG Road Crossing',
+      coords: [28.4700, 77.0350],
+      status: 'Moderate Flow',
+      badgeClass: 'yellow',
+      wait: '22.8s',
+      throughput: '118 veh/h',
+      cams: '4 Live Cams',
+      mode: 'RL Adaptive',
+      density: { N: 'medium', S: 'medium', E: 'high', W: 'medium' }
+    },
+    {
+      id: 'city-center',
+      name: 'City Center Signal',
+      coords: [28.4500, 77.0400],
+      status: 'High Congestion',
+      badgeClass: 'red',
+      wait: '41.2s',
+      throughput: '84 veh/h',
+      cams: '4 Live Cams',
+      mode: 'Legacy Baseline',
+      density: { N: 'high', S: 'high', E: 'high', W: 'medium' }
+    },
+    {
+      id: 'nh-48',
+      name: 'NH-48 Interchange',
+      coords: [28.4800, 77.0500],
+      status: 'Free Flow',
+      badgeClass: 'green',
+      wait: '8.5s',
+      throughput: '195 veh/h',
+      cams: '6 Live Cams',
+      mode: 'RL Adaptive',
+      density: { N: 'low', S: 'low', E: 'low', W: 'low' }
+    }
+  ];
+  const map = L.map('real-life-map', {
+    center: [28.4640, 77.0360],
+    zoom: 13,
+    zoomControl: false,
+    attributionControl: false
   });
+  const streetLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    maxZoom: 19
+  }).addTo(map);
+  const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 18
+  });
+  const btnStreet = document.getElementById('btn-map-street');
+  const btnSat = document.getElementById('btn-map-sat');
+  if (btnStreet && btnSat) {
+    btnStreet.addEventListener('click', () => {
+      btnStreet.classList.add('active');
+      btnSat.classList.remove('active');
+      map.removeLayer(satelliteLayer);
+      map.addLayer(streetLayer);
+    });
+    btnSat.addEventListener('click', () => {
+      btnSat.classList.add('active');
+      btnStreet.classList.remove('active');
+      map.removeLayer(streetLayer);
+      map.addLayer(satelliteLayer);
+    });
+  }
+  const corridor1 = [
+    [28.4595, 77.0266],
+    [28.4700, 77.0350],
+    [28.4800, 77.0500]
+  ];
+  L.polyline(corridor1, {
+    color: '#2563EB',
+    weight: 4,
+    opacity: 0.8,
+    dashArray: '6, 8'
+  }).addTo(map);
+  const corridor2 = [
+    [28.4700, 77.0350],
+    [28.4500, 77.0400]
+  ];
+  L.polyline(corridor2, {
+    color: '#16A34A',
+    weight: 4,
+    opacity: 0.75
+  }).addTo(map);
+  junctions.forEach((j, idx) => {
+    const iconHtml = `<div class="gis-pin-marker ${j.badgeClass}"><i class="fa-solid fa-traffic-light"></i></div>`;
+    const customIcon = L.divIcon({
+      html: iconHtml,
+      className: '',
+      iconSize: [32, 32],
+      iconAnchor: [16, 16]
+    });
+    const marker = L.marker(j.coords, { icon: customIcon }).addTo(map);
+    const popupHtml = `
+      <div class="popup-header">${j.name}</div>
+      <span class="popup-badge ${j.badgeClass}">● ${j.status}</span>
+      <div class="popup-stat">⏱ Avg Delay: <strong>${j.wait}</strong></div>
+      <div class="popup-stat">🚗 Flow Rate: <strong>${j.throughput}</strong></div>
+      <div class="popup-stat">📹 Cameras: <strong>${j.cams}</strong></div>
+      <button class="popup-btn" onclick="selectGisJunction('${j.id}')">⚡ Focus in Live Simulator</button>
+    `;
+    marker.bindPopup(popupHtml);
+    marker.on('click', () => {
+      selectGisJunction(j.id);
+    });
+    if (idx === 0) {
+      setTimeout(() => marker.openPopup(), 600);
+    }
+  });
+  window.selectGisJunction = function(id) {
+    const item = junctions.find(j => j.id === id);
+    if (!item) return;
+    const elName = document.getElementById('inspector-name');
+    const elStatus = document.getElementById('inspector-status');
+    const elWait = document.getElementById('inspector-wait');
+    const elFlow = document.getElementById('inspector-flow');
+    const elCam = document.getElementById('inspector-cam');
+    const elMode = document.getElementById('inspector-mode');
+    if (elName) elName.textContent = item.name;
+    if (elStatus) elStatus.innerHTML = `<span class="popup-badge ${item.badgeClass}">● ${item.status}</span>`;
+    if (elWait) elWait.textContent = item.wait;
+    if (elFlow) elFlow.textContent = item.throughput;
+    if (elCam) elCam.textContent = item.cams;
+    if (elMode) elMode.textContent = item.mode;
+    if (simFixed && simAdaptive && item.density) {
+      simFixed.density = { ...item.density };
+      simAdaptive.density = { ...item.density };
+      $$('.density-group select').forEach(sel => {
+        const dir = sel.dataset.dir;
+        if (dir && item.density[dir]) sel.value = item.density[dir];
+      });
+    }
+  };
 }
 function initInferenceBenchmark() {
   const btn = document.getElementById('btn-test-inference');
@@ -718,7 +848,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initMobileMenu();
   initSimulators();
   initChart();
-  initMapInspector();
+  initRealLifeMap();
   initInferenceBenchmark();
   initScrollReveal();
   initNavHighlight();
