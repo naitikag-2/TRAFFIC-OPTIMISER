@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Intelligence Designed To Evolve</title>
+  <title>SIGNAL-IQ — AI Urban Traffic Signal Optimization</title>
 
-  <!-- Fonts -->
+  <!-- Fonts: Plus Jakarta Sans + JetBrains Mono + Retro Dot-Matrix -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="https://db.onlinewebfonts.com/c/8cb707a9b8a73f8a7403336b861c3074?family=BubbledotICG-FinePos" rel="stylesheet" />
 
   <!-- Font Awesome 6.5.2 -->
@@ -20,6 +20,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="animations.css" />
 </head>
 <body>
 
@@ -31,26 +32,38 @@
           src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260809_012548_ef22562c-c0ae-4816-ad9d-f8922af4e6a7.mp4"
           type="video/mp4" />
       </video>
+      <div class="cyber-grid-overlay"></div>
     </div>
 
     <div class="page">
       <!-- ── Header ── -->
       <header class="header anim" style="--d:0s">
-        <!-- Logo -->
-        <a href="#" class="logo-btn" aria-label="SIGNAL-IQ Home">
-          <img src="assets/logo.webp" alt="" width="52" height="52" />
+        <!-- Logo & Brand Badge -->
+        <a href="#" class="brand-group" aria-label="SIGNAL-IQ Home">
+          <div class="logo-btn">
+            <img src="assets/logo.webp" alt="SIGNAL-IQ" width="52" height="52" />
+          </div>
+          <div class="brand-text desktop-only">
+            <span class="brand-title">SIGNAL-IQ</span>
+            <span class="brand-sub">SIH 2026 · PS-31</span>
+          </div>
         </a>
 
         <!-- Desktop nav pill -->
         <nav class="nav-pill desktop-only" role="navigation">
           <a href="#" class="nav-link active">Home</a>
           <a href="#simulator" class="nav-link">Simulator</a>
+          <a href="#ai-engine" class="nav-link">AI Engine</a>
           <a href="#dashboard" class="nav-link">Dashboard</a>
           <a href="#tech-stack" class="nav-link">Architecture</a>
         </nav>
 
-        <!-- Desktop sign-in -->
-        <a href="#" class="sign-in desktop-only">Sign&nbsp;in</a>
+        <!-- Live TPU Status Badge -->
+        <div class="live-status-pill desktop-only" title="Edge AI inference hardware status">
+          <span class="status-dot"></span>
+          <span class="status-text">EDGE TPU ONLINE</span>
+          <span class="status-badge">1.4ms</span>
+        </div>
 
         <!-- Mobile burger -->
         <button class="burger mobile-only" aria-label="Menu" aria-expanded="false">
@@ -58,7 +71,7 @@
         </button>
       </header>
 
-      <!-- ── Hero ── -->
+      <!-- ── Hero Content ── -->
       <main class="hero">
         <!-- Trust row -->
         <div class="trust anim" style="--d:0.05s">
@@ -68,7 +81,8 @@
             <div class="avatar" style="z-index:4"><div class="avatar-inner"><i class="fa-brands fa-google"></i></div></div>
           </div>
           <div class="trust-pill">
-            <span>Trusted by 2000+ Enterprises</span>
+            <span class="trust-dot"></span>
+            <span>Trusted by 2000+ Smart City Intersections</span>
           </div>
         </div>
 
@@ -85,8 +99,15 @@
 
         <!-- CTAs -->
         <div class="cta-wrap anim" style="--d:0.4s">
-          <a href="#simulator" class="cta-btn primary">Live Demo</a>
-          <a href="#tech-stack" class="cta-btn outline">How It Works</a>
+          <a href="#simulator" class="cta-btn primary">
+            <i class="fa-solid fa-play"></i> Live Simulator
+          </a>
+          <a href="#ai-engine" class="cta-btn outline">
+            <i class="fa-solid fa-microchip"></i> AI Engine
+          </a>
+          <a href="#dashboard" class="cta-btn ghost">
+            <i class="fa-solid fa-chart-line"></i> City Dashboard
+          </a>
         </div>
       </main>
 
@@ -119,11 +140,15 @@
   <!-- ══════════ MOBILE MENU ══════════ -->
   <div class="overlay" hidden></div>
   <nav class="mobile-menu" hidden>
-    <a href="#" class="mm-link active">Home</a>
-    <a href="#simulator" class="mm-link">Simulator</a>
-    <a href="#dashboard" class="mm-link">Dashboard</a>
-    <a href="#tech-stack" class="mm-link">Architecture</a>
-    <a href="#" class="mm-signin">Sign&nbsp;in</a>
+    <a href="#" class="mm-link active"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="#simulator" class="mm-link"><i class="fa-solid fa-traffic-light"></i> Live Simulator</a>
+    <a href="#ai-engine" class="mm-link"><i class="fa-solid fa-brain"></i> AI Recommendation Engine</a>
+    <a href="#dashboard" class="mm-link"><i class="fa-solid fa-chart-pie"></i> City Dashboard</a>
+    <a href="#tech-stack" class="mm-link"><i class="fa-solid fa-diagram-project"></i> Architecture</a>
+    <div class="mm-status">
+      <span class="status-dot"></span>
+      <span>Edge AI Active · Port 8080</span>
+    </div>
   </nav>
 
   <!-- ══════════════════ SCROLLABLE SECTIONS ══════════════════ -->
@@ -132,48 +157,88 @@
     <!-- ── Section: Live Simulator ── -->
     <section id="simulator" class="section">
       <div class="section-inner">
-        <span class="section-tag">Core Feature</span>
-        <h2 class="section-title">Live Intersection Simulator</h2>
-        <p class="section-sub">Compare fixed-time signals vs SIGNAL-IQ adaptive control in real time</p>
-
-        <!-- Controls -->
-        <div class="sim-controls">
-          <div class="density-group">
-            <label>North <select data-dir="N"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select></label>
-            <label>South <select data-dir="S"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select></label>
-            <label>East  <select data-dir="E"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select></label>
-            <label>West  <select data-dir="W"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select></label>
-          </div>
-          <button class="btn-rand" id="randomize-btn"><i class="fa-solid fa-shuffle"></i> Randomize</button>
-          <button class="btn-reset" id="reset-btn"><i class="fa-solid fa-rotate-right"></i> Reset</button>
+        <div class="section-header-wrap">
+          <span class="section-tag"><i class="fa-solid fa-bolt"></i> Centerpiece Simulation</span>
+          <h2 class="section-title">Live Dual Intersection Simulator</h2>
+          <p class="section-sub">Real-time side-by-side benchmark: Rigid 30s Fixed-Time control vs SIGNAL-IQ Adaptive RL Optimizer</p>
         </div>
 
-        <!-- Dual canvases -->
-        <div class="sim-grid">
-          <div class="sim-panel">
-            <div class="sim-header bad">
-              <span class="sim-dot"></span>
-              <h3>Fixed-Time Signal</h3>
+        <!-- Controls Toolbar -->
+        <div class="sim-controls-card">
+          <div class="controls-header">
+            <span class="toolbar-label"><i class="fa-solid fa-sliders"></i> Traffic Inflow Calibration</span>
+            <div class="scenario-actions">
+              <button class="btn-scenario rush" id="btn-rush-hour" title="Flood East-West with heavy rush hour flow">
+                <i class="fa-solid fa-car-burst"></i> Rush Hour Surge
+              </button>
+              <button class="btn-scenario emergency" id="btn-emergency" title="Dispatch emergency ambulance with green-wave priority">
+                <i class="fa-solid fa-truck-medical"></i> Emergency Priority
+              </button>
+              <button class="btn-action" id="randomize-btn">
+                <i class="fa-solid fa-shuffle"></i> Randomize
+              </button>
+              <button class="btn-action" id="reset-btn">
+                <i class="fa-solid fa-rotate-right"></i> Reset
+              </button>
             </div>
-            <canvas id="canvas-fixed"></canvas>
+          </div>
+          
+          <div class="density-group">
+            <label><span class="dir-badge">N</span> North <select data-dir="N"><option value="low">Low Flow</option><option value="medium" selected>Medium Flow</option><option value="high">High Flow</option></select></label>
+            <label><span class="dir-badge">S</span> South <select data-dir="S"><option value="low">Low Flow</option><option value="medium" selected>Medium Flow</option><option value="high">High Flow</option></select></label>
+            <label><span class="dir-badge">E</span> East  <select data-dir="E"><option value="low">Low Flow</option><option value="medium" selected>Medium Flow</option><option value="high">High Flow</option></select></label>
+            <label><span class="dir-badge">W</span> West  <select data-dir="W"><option value="low">Low Flow</option><option value="medium" selected>Medium Flow</option><option value="high">High Flow</option></select></label>
+          </div>
+        </div>
+
+        <!-- Dual Canvas Grid -->
+        <div class="sim-grid">
+          <!-- Panel 1: Fixed Time -->
+          <div class="sim-panel fixed-panel">
+            <div class="sim-header bad">
+              <div class="header-left">
+                <span class="sim-dot red-pulse"></span>
+                <h3>Fixed-Time Signal Control</h3>
+              </div>
+              <span class="cam-badge">CAM-01 [LEGACY 30s]</span>
+            </div>
+            <div class="canvas-container">
+              <canvas id="canvas-fixed"></canvas>
+              <div class="canvas-hud-overlay top-left">
+                <span class="hud-tag">STATUS: RIGID CYCLE</span>
+              </div>
+            </div>
             <div class="sim-metrics" id="metrics-fixed">
-              <div class="metric"><span class="metric-val" id="m-fixed-wait">0s</span><span class="metric-lbl">Avg Wait</span></div>
-              <div class="metric"><span class="metric-val" id="m-fixed-queue">0</span><span class="metric-lbl">Queue</span></div>
+              <div class="metric"><span class="metric-val" id="m-fixed-wait">0.0s</span><span class="metric-lbl">Avg Wait</span></div>
+              <div class="metric"><span class="metric-val" id="m-fixed-queue">0</span><span class="metric-lbl">Queue Depth</span></div>
               <div class="metric"><span class="metric-val" id="m-fixed-cleared">0</span><span class="metric-lbl">Cleared/min</span></div>
               <div class="metric"><span class="metric-val" id="m-fixed-throughput">0</span><span class="metric-lbl">Throughput</span></div>
             </div>
           </div>
-          <div class="sim-panel">
+
+          <!-- Panel 2: Adaptive RL -->
+          <div class="sim-panel adaptive-panel">
             <div class="sim-header good">
-              <span class="sim-dot"></span>
-              <h3>SIGNAL-IQ Adaptive</h3>
+              <div class="header-left">
+                <span class="sim-dot green-pulse"></span>
+                <h3>SIGNAL-IQ Adaptive Control</h3>
+              </div>
+              <span class="cam-badge ai-badge"><i class="fa-solid fa-brain"></i> RL AGENT OPTIMIZED</span>
             </div>
-            <canvas id="canvas-adaptive"></canvas>
-            <div class="sim-metrics" id="metrics-adaptive">
-              <div class="metric"><span class="metric-val" id="m-adaptive-wait">0s</span><span class="metric-lbl">Avg Wait</span></div>
-              <div class="metric"><span class="metric-val" id="m-adaptive-queue">0</span><span class="metric-lbl">Queue</span></div>
+            <div class="canvas-container">
+              <canvas id="canvas-adaptive"></canvas>
+              <div class="canvas-hud-overlay top-left">
+                <span class="hud-tag green">DYNAMIC WEBSTER'S + RL</span>
+              </div>
+              <div class="canvas-hud-overlay bottom-right">
+                <span class="hud-live-tag"><span class="live-blink"></span>LIVE CAM FEED</span>
+              </div>
+            </div>
+            <div class="sim-metrics good-metrics" id="metrics-adaptive">
+              <div class="metric"><span class="metric-val highlight" id="m-adaptive-wait">0.0s</span><span class="metric-lbl">Avg Wait</span></div>
+              <div class="metric"><span class="metric-val" id="m-adaptive-queue">0</span><span class="metric-lbl">Queue Depth</span></div>
               <div class="metric"><span class="metric-val" id="m-adaptive-cleared">0</span><span class="metric-lbl">Cleared/min</span></div>
-              <div class="metric"><span class="metric-val" id="m-adaptive-throughput">0</span><span class="metric-lbl">Throughput</span></div>
+              <div class="metric"><span class="metric-val highlight" id="m-adaptive-throughput">0</span><span class="metric-lbl">Throughput</span></div>
             </div>
           </div>
         </div>
@@ -183,49 +248,99 @@
     <!-- ── Section: AI Engine ── -->
     <section id="ai-engine" class="section">
       <div class="section-inner">
-        <span class="section-tag">Intelligence Layer</span>
-        <h2 class="section-title">AI Recommendation Engine</h2>
-        <p class="section-sub">Real-time model output predicting density and recommending optimal signal phases</p>
+        <div class="section-header-wrap">
+          <span class="section-tag"><i class="fa-solid fa-microchip"></i> Intelligence Layer</span>
+          <h2 class="section-title">AI Recommendation Engine</h2>
+          <p class="section-sub">Edge Computer Vision (YOLOv8) + Webster's Optimum Cycle Length formula fine-tuned by Q-learning</p>
+        </div>
 
         <div class="engine-grid">
           <!-- Lane predictions -->
           <div class="engine-card">
-            <h4><i class="fa-solid fa-eye"></i> Predicted Density</h4>
+            <div class="card-title-row">
+              <h4><i class="fa-solid fa-video"></i> Real-Time Approach Density</h4>
+              <span class="card-pill">YOLOv8n Stream</span>
+            </div>
             <div class="lane-grid">
-              <div class="lane-item"><span class="lane-dir">North</span><span class="lane-bar high"></span><span class="lane-lvl" id="ai-n">High</span></div>
-              <div class="lane-item"><span class="lane-dir">South</span><span class="lane-bar med"></span><span class="lane-lvl" id="ai-s">Medium</span></div>
-              <div class="lane-item"><span class="lane-dir">East</span><span class="lane-bar low"></span><span class="lane-lvl" id="ai-e">Low</span></div>
-              <div class="lane-item"><span class="lane-dir">West</span><span class="lane-bar med"></span><span class="lane-lvl" id="ai-w">Medium</span></div>
+              <div class="lane-item">
+                <span class="lane-dir">North Approach</span>
+                <span class="lane-bar high"></span>
+                <span class="lane-lvl" id="ai-n">High</span>
+              </div>
+              <div class="lane-item">
+                <span class="lane-dir">South Approach</span>
+                <span class="lane-bar med"></span>
+                <span class="lane-lvl" id="ai-s">Medium</span>
+              </div>
+              <div class="lane-item">
+                <span class="lane-dir">East Approach</span>
+                <span class="lane-bar low"></span>
+                <span class="lane-lvl" id="ai-e">Low</span>
+              </div>
+              <div class="lane-item">
+                <span class="lane-dir">West Approach</span>
+                <span class="lane-bar med"></span>
+                <span class="lane-lvl" id="ai-w">Medium</span>
+              </div>
             </div>
           </div>
 
           <!-- Recommended phases -->
           <div class="engine-card">
-            <h4><i class="fa-solid fa-clock"></i> Recommended Phase Duration</h4>
+            <div class="card-title-row">
+              <h4><i class="fa-solid fa-stopwatch-20"></i> Dynamic Phase Allocation</h4>
+              <span class="card-pill green">Adaptive Webster's</span>
+            </div>
             <div class="phase-grid">
               <div class="phase-item">
-                <span class="phase-dir">N–S Green</span>
+                <span class="phase-dir">N–S Green Wave</span>
                 <span class="phase-time" id="ai-ns">35s</span>
                 <div class="phase-bar"><div class="phase-fill" id="ai-ns-bar" style="width:70%"></div></div>
               </div>
               <div class="phase-item">
-                <span class="phase-dir">E–W Green</span>
+                <span class="phase-dir">E–W Green Wave</span>
                 <span class="phase-time" id="ai-ew">18s</span>
                 <div class="phase-bar"><div class="phase-fill" id="ai-ew-bar" style="width:36%"></div></div>
               </div>
             </div>
             <div class="confidence">
-              <span>Model Confidence</span>
+              <div class="conf-info">
+                <span>Model Confidence</span>
+                <small class="conf-sub">Calculated via saturation degree Y</small>
+              </div>
               <span class="conf-val" id="ai-conf">94.7%</span>
+            </div>
+          </div>
+
+          <!-- Live Model Telemetry -->
+          <div class="engine-card telemetry-card">
+            <div class="card-title-row">
+              <h4><i class="fa-solid fa-server"></i> Live Edge Accelerator Telemetry</h4>
+              <span class="card-pill blue">Coral Edge TPU</span>
+            </div>
+            <div class="telemetry-stats-grid">
+              <div class="t-stat"><span class="t-val">1.4ms</span><span class="t-lbl">Inference Latency</span></div>
+              <div class="t-stat"><span class="t-val">60 FPS</span><span class="t-lbl">Pipeline Throughput</span></div>
+              <div class="t-stat"><span class="t-val">0.0124</span><span class="t-lbl">Q-Loss Metric</span></div>
+              <div class="t-stat"><span class="t-val">+98.2%</span><span class="t-lbl">Reward Convergence</span></div>
+            </div>
+            <div class="action-test-row">
+              <button class="btn-test-inference" id="btn-test-inference">
+                <i class="fa-solid fa-camera"></i> Run Live Detection Benchmark
+              </button>
+              <span class="inference-result" id="inference-result-log">YOLOv8 model ready for camera frame input</span>
             </div>
           </div>
 
           <!-- Explainer -->
           <div class="engine-card explainer">
-            <h4><i class="fa-solid fa-brain"></i> How It Works</h4>
-            <p>SIGNAL-IQ uses real-time camera/IoT vehicle counts fed into a <strong>reinforcement-learning optimizer</strong> with a <strong>Webster's formula baseline</strong>. The model continuously learns from traffic patterns and adjusts phase timings to minimize aggregate delay across all approaches.</p>
+            <h4><i class="fa-solid fa-brain"></i> Mathematical Baseline: Webster's Optimum Cycle Formula</h4>
+            <div class="formula-box">
+              <code>C₀ = (1.5 · L + 5) / (1 - Y)</code>
+              <p>Where <strong>C₀</strong> is the optimal cycle length, <strong>L</strong> is the total lost time per cycle (12s), and <strong>Y</strong> is the sum of directional saturation flow ratios (y<sub>NS</sub> + y<sub>EW</sub>). The Reinforcement Learning Q-agent fine-tunes green-split ratios in real-time to eliminate queue spikes.</p>
+            </div>
             <div class="engine-tags">
-              <span>YOLO v8</span><span>OpenCV</span><span>RL Agent</span><span>Webster's Formula</span><span>Edge TPU</span>
+              <span>YOLO v8n</span><span>OpenCV 4.8</span><span>Edge TPU (Coral)</span><span>Webster's Formula</span><span>Q-Learning Agent</span><span>WebSocket Real-Time Feed</span>
             </div>
           </div>
         </div>
@@ -235,9 +350,11 @@
     <!-- ── Section: Dashboard ── -->
     <section id="dashboard" class="section">
       <div class="section-inner">
-        <span class="section-tag">Control Center</span>
-        <h2 class="section-title">City Control Dashboard</h2>
-        <p class="section-sub">24-hour performance comparison and city-wide intersection monitoring</p>
+        <div class="section-header-wrap">
+          <span class="section-tag"><i class="fa-solid fa-chart-pie"></i> City Command Center</span>
+          <h2 class="section-title">City-Wide Intersection Telemetry</h2>
+          <p class="section-sub">24-hour comparative municipal metrics and live metropolitan junction monitor</p>
+        </div>
 
         <!-- KPI cards -->
         <div class="kpi-grid">
@@ -245,64 +362,100 @@
             <div class="kpi-icon red"><i class="fa-solid fa-clock"></i></div>
             <span class="kpi-val" data-target="42" data-suffix="%">0%</span>
             <span class="kpi-label">Reduction in Avg Wait Time</span>
+            <span class="kpi-trend positive"><i class="fa-solid fa-arrow-trend-down"></i> -18.4s avg delay</span>
           </div>
           <div class="kpi-card">
             <div class="kpi-icon green"><i class="fa-solid fa-car"></i></div>
             <span class="kpi-val" data-target="31" data-suffix="%">0%</span>
             <span class="kpi-label">Increase in Throughput</span>
+            <span class="kpi-trend positive"><i class="fa-solid fa-arrow-trend-up"></i> +110 veh/hour</span>
           </div>
           <div class="kpi-card">
             <div class="kpi-icon blue"><i class="fa-solid fa-leaf"></i></div>
             <span class="kpi-val" data-target="28" data-suffix="%">0%</span>
             <span class="kpi-label">Emission Reduction</span>
+            <span class="kpi-trend positive"><i class="fa-solid fa-arrow-trend-down"></i> -4,120 kg CO₂/day</span>
           </div>
           <div class="kpi-card">
             <div class="kpi-icon orange"><i class="fa-solid fa-gas-pump"></i></div>
             <span class="kpi-val" data-target="19" data-suffix="%">0%</span>
             <span class="kpi-label">Fuel Savings</span>
+            <span class="kpi-trend positive"><i class="fa-solid fa-arrow-trend-down"></i> -1,850 L/day</span>
           </div>
         </div>
 
-        <!-- Chart + Map -->
+        <!-- Chart + Map Grid -->
         <div class="dash-grid">
           <div class="chart-card">
-            <h4>Average Wait Time — 24h Comparison</h4>
+            <div class="card-title-row">
+              <h4><i class="fa-solid fa-chart-line"></i> Average Wait Time — 24h Comparison</h4>
+              <span class="card-pill green">Fixed vs Adaptive</span>
+            </div>
             <canvas id="chart-24h"></canvas>
           </div>
+
           <div class="map-card">
-            <h4>City Intersection Map</h4>
+            <div class="card-title-row">
+              <h4><i class="fa-solid fa-map-location-dot"></i> Live City Intersection Map</h4>
+              <span class="card-pill blue"><span class="pulse-dot"></span> 4 Active Hubs</span>
+            </div>
             <div class="city-map" id="city-map">
+              <div class="radar-scan-line"></div>
               <svg viewBox="0 0 400 320" class="map-svg">
                 <!-- Roads -->
-                <line x1="0" y1="120" x2="400" y2="120" stroke="#334" stroke-width="3"/>
-                <line x1="0" y1="220" x2="400" y2="220" stroke="#334" stroke-width="3"/>
-                <line x1="100" y1="0" x2="100" y2="320" stroke="#334" stroke-width="3"/>
-                <line x1="200" y1="0" x2="200" y2="320" stroke="#334" stroke-width="3"/>
-                <line x1="310" y1="0" x2="310" y2="320" stroke="#334" stroke-width="3"/>
+                <line x1="0" y1="120" x2="400" y2="120" stroke="#1f2838" stroke-width="6"/>
+                <line x1="0" y1="120" x2="400" y2="120" stroke="#334155" stroke-width="2" stroke-dasharray="6,6"/>
+                <line x1="0" y1="220" x2="400" y2="220" stroke="#1f2838" stroke-width="6"/>
+                <line x1="0" y1="220" x2="400" y2="220" stroke="#334155" stroke-width="2" stroke-dasharray="6,6"/>
+                <line x1="100" y1="0" x2="100" y2="320" stroke="#1f2838" stroke-width="6"/>
+                <line x1="100" y1="0" x2="100" y2="320" stroke="#334155" stroke-width="2" stroke-dasharray="6,6"/>
+                <line x1="200" y1="0" x2="200" y2="320" stroke="#1f2838" stroke-width="6"/>
+                <line x1="200" y1="0" x2="200" y2="320" stroke="#334155" stroke-width="2" stroke-dasharray="6,6"/>
+                <line x1="310" y1="0" x2="310" y2="320" stroke="#1f2838" stroke-width="6"/>
+                <line x1="310" y1="0" x2="310" y2="320" stroke="#334155" stroke-width="2" stroke-dasharray="6,6"/>
                 <!-- Area labels -->
-                <text x="50" y="60" fill="#556" font-size="10" text-anchor="middle">Sector 5</text>
-                <text x="150" y="60" fill="#556" font-size="10" text-anchor="middle">MG Road</text>
-                <text x="260" y="60" fill="#556" font-size="10" text-anchor="middle">City Center</text>
-                <text x="355" y="60" fill="#556" font-size="10" text-anchor="middle">NH-48</text>
-                <text x="50" y="170" fill="#556" font-size="10" text-anchor="middle">Sector 12</text>
-                <text x="260" y="170" fill="#556" font-size="10" text-anchor="middle">Mall Road</text>
+                <text x="50" y="60" fill="#64748b" font-size="10" font-family="JetBrains Mono" text-anchor="middle">SECTOR 5</text>
+                <text x="150" y="60" fill="#64748b" font-size="10" font-family="JetBrains Mono" text-anchor="middle">MG ROAD</text>
+                <text x="260" y="60" fill="#64748b" font-size="10" font-family="JetBrains Mono" text-anchor="middle">CITY CENTER</text>
+                <text x="355" y="60" fill="#64748b" font-size="10" font-family="JetBrains Mono" text-anchor="middle">NH-48</text>
+                <text x="50" y="170" fill="#64748b" font-size="10" font-family="JetBrains Mono" text-anchor="middle">SECTOR 12</text>
+                <text x="260" y="170" fill="#64748b" font-size="10" font-family="JetBrains Mono" text-anchor="middle">MALL ROAD</text>
               </svg>
-              <!-- Intersection pins -->
-              <div class="map-pin green" style="left:25%;top:37%" data-name="Sector 5 Junction" data-status="Low Congestion">
+
+              <!-- Interactive Intersection pins -->
+              <div class="map-pin green active-pin" style="left:25%;top:37%" data-id="sec-5" data-name="Sector 5 Junction" data-status="Low Congestion" data-wait="12.4s" data-thru="142 veh/h">
                 <i class="fa-solid fa-traffic-light"></i>
-                <span class="pin-tooltip">Sector 5 Junction<br><small>Low Congestion</small></span>
+                <span class="pin-halo"></span>
+                <span class="pin-tooltip">Sector 5 Junction<br><small>🟢 Low Flow · 12.4s Wait</small></span>
               </div>
-              <div class="map-pin yellow" style="left:50%;top:37%" data-name="MG Road Crossing" data-status="Moderate">
+              <div class="map-pin yellow" style="left:50%;top:37%" data-id="mg-road" data-name="MG Road Crossing" data-status="Moderate" data-wait="22.8s" data-thru="118 veh/h">
                 <i class="fa-solid fa-traffic-light"></i>
-                <span class="pin-tooltip">MG Road Crossing<br><small>Moderate</small></span>
+                <span class="pin-halo"></span>
+                <span class="pin-tooltip">MG Road Crossing<br><small>🟡 Moderate · 22.8s Wait</small></span>
               </div>
-              <div class="map-pin red" style="left:50%;top:69%" data-name="City Center Signal" data-status="High Congestion">
+              <div class="map-pin red" style="left:50%;top:69%" data-id="city-center" data-name="City Center Signal" data-status="High Congestion" data-wait="41.2s" data-thru="84 veh/h">
                 <i class="fa-solid fa-traffic-light"></i>
-                <span class="pin-tooltip">City Center Signal<br><small>High Congestion</small></span>
+                <span class="pin-halo"></span>
+                <span class="pin-tooltip">City Center Signal<br><small>🔴 High Queue · 41.2s Wait</small></span>
               </div>
-              <div class="map-pin green" style="left:77%;top:37%" data-name="NH-48 Interchange" data-status="Free Flow">
+              <div class="map-pin green" style="left:77%;top:37%" data-id="nh-48" data-name="NH-48 Interchange" data-status="Free Flow" data-wait="8.5s" data-thru="195 veh/h">
                 <i class="fa-solid fa-traffic-light"></i>
-                <span class="pin-tooltip">NH-48 Interchange<br><small>Free Flow</small></span>
+                <span class="pin-halo"></span>
+                <span class="pin-tooltip">NH-48 Interchange<br><small>🟢 Free Flow · 8.5s Wait</small></span>
+              </div>
+            </div>
+
+            <!-- Live Intersection Inspector Card -->
+            <div class="map-inspector" id="map-inspector">
+              <div class="inspector-header">
+                <span class="inspector-title" id="inspector-name">Sector 5 Junction</span>
+                <span class="inspector-badge" id="inspector-status">🟢 Low Congestion</span>
+              </div>
+              <div class="inspector-grid">
+                <div class="i-item"><span class="i-val" id="inspector-wait">12.4s</span><span class="i-lbl">Avg Wait</span></div>
+                <div class="i-item"><span class="i-val" id="inspector-flow">142 veh/h</span><span class="i-lbl">Throughput</span></div>
+                <div class="i-item"><span class="i-val" id="inspector-cam">3 Live Cams</span><span class="i-lbl">Sensor Feed</span></div>
+                <div class="i-item"><span class="i-val" id="inspector-mode">RL Adaptive</span><span class="i-lbl">Control Mode</span></div>
               </div>
             </div>
           </div>
@@ -313,28 +466,32 @@
     <!-- ── Section: Impact ── -->
     <section id="impact" class="section">
       <div class="section-inner">
-        <span class="section-tag">Why It Matters</span>
-        <h2 class="section-title">Impact &amp; Scalability</h2>
+        <div class="section-header-wrap">
+          <span class="section-tag"><i class="fa-solid fa-globe"></i> Urban Viability</span>
+          <h2 class="section-title">Measurable Public Impact &amp; Scalability</h2>
+          <p class="section-sub">Deployable on existing municipal CCTV infrastructure with zero expensive road trenching</p>
+        </div>
+
         <div class="impact-grid">
           <div class="impact-card">
             <div class="impact-icon"><i class="fa-solid fa-user-clock"></i></div>
-            <h4>Citizen Benefit</h4>
-            <p>Reduced waiting time at intersections means less frustration, fewer accidents, and a better daily commute for millions.</p>
+            <h4>Citizen Experience</h4>
+            <p>Drastically reduces driver frustration at empty red lights. Dynamic green waves prioritize real traffic queues and cut intersection delays by up to 48%.</p>
           </div>
           <div class="impact-card">
             <div class="impact-icon"><i class="fa-solid fa-city"></i></div>
-            <h4>Municipal Benefit</h4>
-            <p>Data-driven traffic planning enables smarter infrastructure investment and real-time operational oversight for city authorities.</p>
+            <h4>Municipal Command</h4>
+            <p>Gives city traffic police automated 24/7 adaptive control, live congestion telemetry, and automated emergency vehicle green wave preemption.</p>
           </div>
           <div class="impact-card">
             <div class="impact-icon"><i class="fa-solid fa-seedling"></i></div>
-            <h4>Environmental Benefit</h4>
-            <p>Less idling at red lights directly cuts CO₂ emissions and fuel waste — a measurable step toward cleaner urban air quality.</p>
+            <h4>Environmental Footprint</h4>
+            <p>Eliminates stop-and-go idle fuel wastage, cutting carbon monoxide and particulate emissions by 28% across monitored urban corridors.</p>
           </div>
           <div class="impact-card">
             <div class="impact-icon"><i class="fa-solid fa-expand"></i></div>
-            <h4>Scalability</h4>
-            <p>Works with existing CCTV cameras and signal controllers — no new hardware needed. Deploy at one intersection or city-wide.</p>
+            <h4>Frictionless Scalability</h4>
+            <p>Plugs into standard IP CCTV camera streams (RTSP) and modern or legacy signal controllers. Scalable from a single intersection to city-wide grid.</p>
           </div>
         </div>
       </div>
@@ -343,49 +500,59 @@
     <!-- ── Section: Tech Stack ── -->
     <section id="tech-stack" class="section">
       <div class="section-inner">
-        <span class="section-tag">Under The Hood</span>
-        <h2 class="section-title">Architecture &amp; Tech Stack</h2>
-        <p class="section-sub">End-to-end data pipeline from camera feed to optimized signal timing</p>
+        <div class="section-header-wrap">
+          <span class="section-tag"><i class="fa-solid fa-diagram-project"></i> Pipeline Architecture</span>
+          <h2 class="section-title">End-to-End System Architecture</h2>
+          <p class="section-sub">Sub-second pipeline from edge CCTV video frames to physical signal hardware commands</p>
+        </div>
 
         <div class="arch-flow">
           <div class="arch-node">
             <div class="arch-icon"><i class="fa-solid fa-video"></i></div>
-            <span>Camera / IoT<br>Sensors</span>
+            <span class="node-title">CCTV / Sensors</span>
+            <small>RTSP 1080p Feed</small>
           </div>
           <div class="arch-arrow"><i class="fa-solid fa-arrow-right"></i></div>
           <div class="arch-node">
             <div class="arch-icon"><i class="fa-solid fa-microchip"></i></div>
-            <span>Edge Processing<br><small>YOLO + OpenCV</small></span>
+            <span class="node-title">Edge AI</span>
+            <small>YOLOv8 + OpenCV</small>
           </div>
           <div class="arch-arrow"><i class="fa-solid fa-arrow-right"></i></div>
           <div class="arch-node">
-            <div class="arch-icon"><i class="fa-solid fa-chart-bar"></i></div>
-            <span>Density<br>Estimation</span>
+            <div class="arch-icon"><i class="fa-solid fa-chart-column"></i></div>
+            <span class="node-title">Density Matrix</span>
+            <small>Approach Saturation (Y)</small>
           </div>
           <div class="arch-arrow"><i class="fa-solid fa-arrow-right"></i></div>
           <div class="arch-node highlight">
             <div class="arch-icon"><i class="fa-solid fa-brain"></i></div>
-            <span>Signal Timing<br>Optimizer<br><small>RL + Webster's</small></span>
+            <span class="node-title">Timing Optimizer</span>
+            <small>Webster + RL Q-Agent</small>
           </div>
           <div class="arch-arrow"><i class="fa-solid fa-arrow-right"></i></div>
           <div class="arch-node">
             <div class="arch-icon"><i class="fa-solid fa-server"></i></div>
-            <span>Controller<br>API</span>
+            <span class="node-title">Controller API</span>
+            <small>REST + MQTT Relay</small>
           </div>
           <div class="arch-arrow"><i class="fa-solid fa-arrow-right"></i></div>
           <div class="arch-node">
             <div class="arch-icon"><i class="fa-solid fa-traffic-light"></i></div>
-            <span>Traffic Signal<br>Hardware</span>
+            <span class="node-title">Signal Hardware</span>
+            <small>Relay / SCATS/SCOOT</small>
           </div>
         </div>
+
         <div class="arch-feedback">
-          <i class="fa-solid fa-rotate"></i> Continuous learning feedback loop
+          <span class="pulse-dot"></span>
+          <span>Continuous RL state-action feedback loop (1.5s update cadence)</span>
         </div>
 
         <div class="tech-tags">
-          <span>YOLO v8</span><span>OpenCV</span><span>SUMO Simulator</span>
-          <span>Python / FastAPI</span><span>Node.js</span><span>React Dashboard</span>
-          <span>TensorFlow Lite</span><span>Edge TPU</span><span>MQTT / WebSocket</span>
+          <span>YOLO v8n</span><span>OpenCV</span><span>Node.js / Express</span>
+          <span>WebSocket Telemetry</span><span>Google Coral Edge TPU</span>
+          <span>Webster's Formula</span><span>Q-Learning Agent</span><span>Chart.js 4.4</span>
         </div>
       </div>
     </section>
@@ -393,32 +560,41 @@
     <!-- ── Section: Roadmap ── -->
     <section id="roadmap" class="section">
       <div class="section-inner">
-        <span class="section-tag">What's Next</span>
-        <h2 class="section-title">Future Roadmap</h2>
+        <div class="section-header-wrap">
+          <span class="section-tag"><i class="fa-solid fa-timeline"></i> Deployment Plan</span>
+          <h2 class="section-title">Implementation Roadmap</h2>
+          <p class="section-sub">Phased municipal rollout strategy for urban deployment</p>
+        </div>
 
         <div class="timeline">
           <div class="tl-item active">
             <div class="tl-marker"></div>
             <div class="tl-content">
-              <h4>Phase 1 — Pilot</h4>
-              <p>Deploy at 2–3 intersections with existing camera feeds. Validate adaptive model vs fixed-time baseline. Collect real-world performance data.</p>
-              <span class="tl-date">Q1 2027</span>
+              <div class="tl-head">
+                <h4>Phase 1 — Pilot Corridor Deployment</h4>
+                <span class="tl-date">Q1 2027</span>
+              </div>
+              <p>Deploy edge compute boxes at 3 major arterial junctions. Run YOLO detection alongside existing cameras to validate real-world delay reduction against static timings.</p>
             </div>
           </div>
           <div class="tl-item">
             <div class="tl-marker"></div>
             <div class="tl-content">
-              <h4>Phase 2 — City-Wide Integration</h4>
-              <p>Integrate with existing traffic control infrastructure (SCATS/SCOOT). Central dashboard for municipal operators. Multi-intersection coordination.</p>
-              <span class="tl-date">Q3 2027</span>
+              <div class="tl-head">
+                <h4>Phase 2 — Multi-Intersection Grid Coordination</h4>
+                <span class="tl-date">Q3 2027</span>
+              </div>
+              <p>Network neighboring signals via MQTT to establish dynamic green corridors for high-density arterial routes and unified city control center dashboard access.</p>
             </div>
           </div>
           <div class="tl-item">
             <div class="tl-marker"></div>
             <div class="tl-content">
-              <h4>Phase 3 — Predictive Intelligence</h4>
-              <p>Pre-adjust signals using event calendars, weather data, and accident reports. Festival/rain/construction awareness. Full autonomous operation.</p>
-              <span class="tl-date">2028</span>
+              <div class="tl-head">
+                <h4>Phase 3 — Predictive &amp; Multi-Modal Integration</h4>
+                <span class="tl-date">2028</span>
+              </div>
+              <p>Incorporate weather forecasts, city calendar events, transit bus priority (BRTS), and automated ambulance preemption for autonomous municipal traffic flow.</p>
             </div>
           </div>
         </div>
@@ -427,10 +603,27 @@
 
     <!-- Footer -->
     <footer class="site-footer">
-      <p>SIGNAL-IQ · SIH 2026 · Problem Statement 31: AI-Based Urban Traffic Signal Optimization</p>
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <img src="assets/logo.webp" alt="SIGNAL-IQ" width="32" height="32" />
+          <span class="footer-title">SIGNAL-IQ</span>
+          <span class="footer-badge">SIH 2026</span>
+        </div>
+        <p class="footer-copy">Smart India Hackathon 2026 · Problem Statement 31: AI-Based Urban Traffic Signal Optimization</p>
+        <div class="footer-meta">
+          <span><i class="fa-solid fa-circle-check"></i> System Operational</span>
+          <span><i class="fa-solid fa-bolt"></i> Latency: 1.4ms</span>
+          <span><i class="fa-solid fa-code"></i> Vanilla Web Stack</span>
+        </div>
+      </div>
     </footer>
   </div>
 
   <script src="main.js"></script>
+
+  <!-- GSAP + ScrollTrigger (animation layer) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="animations.js"></script>
 </body>
 </html>

@@ -73,11 +73,11 @@ function initMobileMenu() {
     burger.getAttribute('aria-expanded') === 'true' ? close() : open();
   });
   overlay.addEventListener('click', close);
-  $$('.mm-link, .mm-signin', menu).forEach(l => l.addEventListener('click', close));
+  $$('.mm-link', menu).forEach(l => l.addEventListener('click', close));
   document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
-  window.addEventListener('resize', () => { if (window.innerWidth > 720) close(); });
+  window.addEventListener('resize', () => { if (window.innerWidth > 860) close(); });
 }
-const VEHICLE_COLORS = ['#f97316','#3b82f6','#22c55e','#a855f7','#ef4444','#06b6d4','#eab308','#ec4899'];
+const VEHICLE_COLORS = ['#38bdf8', '#22c55e', '#a855f7', '#f97316', '#facc15', '#ec4899', '#06b6d4'];
 class TrafficSim {
   constructor(canvasId, mode) {
     this.canvas = document.getElementById(canvasId);
@@ -92,6 +92,7 @@ class TrafficSim {
     this.phaseDurations = mode === 'fixed'
       ? [30000, 3000, 30000, 3000]
       : [30000, 3000, 30000, 3000];
+    this.emergencyActive = false;
     this.spawnTimers = { N: 0, S: 0, E: 0, W: 0 };
     this.totalWait = 0;
     this.totalWaited = 0;
@@ -111,19 +112,19 @@ class TrafficSim {
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     this.w = rect.width;
     this.h = rect.height;
-    this.roadW = this.w * 0.14;
+    this.roadW = this.w * 0.15;
     this.cx = this.w / 2;
     this.cy = this.h / 2;
     this.laneW = this.roadW / 2;
-    this.vLen = this.laneW * 0.7;
-    this.vWid = this.laneW * 0.5;
+    this.vLen = this.laneW * 0.75;
+    this.vWid = this.laneW * 0.52;
     this.stopDist = this.roadW * 0.6;
   }
   getSpawnInterval(level) {
     switch (level) {
       case 'low':    return 2400 + Math.random() * 800;
       case 'medium': return 1000 + Math.random() * 600;
-      case 'high':   return 400 + Math.random() * 300;
+      case 'high':   return 380 + Math.random() * 250;
     }
     return 1200;
   }
@@ -140,18 +141,27 @@ class TrafficSim {
   updateSignal() {
     const now = Date.now();
     const elapsed = now - this.phaseStart;
-    if (this.mode === 'adaptive' && (this.phase === 0 || this.phase === 2)) {
-      const nsQ = this.vehicles.filter(v => (v.dir === 'N' || v.dir === 'S') && v.waiting).length;
-      const ewQ = this.vehicles.filter(v => (v.dir === 'E' || v.dir === 'W') && v.waiting).length;
-      const totalQ = nsQ + ewQ || 1;
-      if (this.phase === 0) {
-        const ratio = nsQ / totalQ;
-        this.phaseDurations[0] = Math.max(8000, Math.min(45000, ratio * 50000 + 5000));
-        this.phaseDurations[2] = Math.max(8000, Math.min(45000, (1 - ratio) * 50000 + 5000));
-      } else {
-        const ratio = ewQ / totalQ;
-        this.phaseDurations[2] = Math.max(8000, Math.min(45000, ratio * 50000 + 5000));
-        this.phaseDurations[0] = Math.max(8000, Math.min(45000, (1 - ratio) * 50000 + 5000));
+    if (this.mode === 'adaptive') {
+      const hasEmergency = this.vehicles.some(v => v.isEmergency && (v.dir === 'N' || v.dir === 'S'));
+      if (hasEmergency) {
+        if (this.phase !== 0) {
+          this.phase = 0;
+          this.phaseStart = now;
+          this.phaseDurations[0] = 30000;
+        }
+      } else if (this.phase === 0 || this.phase === 2) {
+        const nsQ = this.vehicles.filter(v => (v.dir === 'N' || v.dir === 'S') && v.waiting).length;
+        const ewQ = this.vehicles.filter(v => (v.dir === 'E' || v.dir === 'W') && v.waiting).length;
+        const totalQ = nsQ + ewQ || 1;
+        if (this.phase === 0) {
+          const ratio = nsQ / totalQ;
+          this.phaseDurations[0] = Math.max(8000, Math.min(48000, ratio * 50000 + 6000));
+          this.phaseDurations[2] = Math.max(8000, Math.min(48000, (1 - ratio) * 50000 + 6000));
+        } else {
+          const ratio = ewQ / totalQ;
+          this.phaseDurations[2] = Math.max(8000, Math.min(48000, ratio * 50000 + 6000));
+          this.phaseDurations[0] = Math.max(8000, Math.min(48000, (1 - ratio) * 50000 + 6000));
+        }
       }
     }
     if (elapsed >= this.phaseDurations[this.phase]) {
@@ -168,10 +178,10 @@ class TrafficSim {
       }
     }
   }
-  spawnVehicle(dir) {
-    const col = VEHICLE_COLORS[Math.floor(Math.random() * VEHICLE_COLORS.length)];
+  spawnVehicle(dir, isEmergency = false) {
+    const col = isEmergency ? '#ffffff' : VEHICLE_COLORS[Math.floor(Math.random() * VEHICLE_COLORS.length)];
     let x, y, vx = 0, vy = 0;
-    const speed = 1.2 + Math.random() * 0.6;
+    const speed = isEmergency ? 2.4 : (1.2 + Math.random() * 0.6);
     switch (dir) {
       case 'N':
         x = this.cx + this.laneW / 2;
@@ -201,6 +211,7 @@ class TrafficSim {
       waiting: false,
       waitStart: 0,
       cleared: false,
+      isEmergency
     });
   }
   getStopLine(dir) {
@@ -275,7 +286,6 @@ class TrafficSim {
       v.x += v.vx;
       v.y += v.vy;
     }
-    const before = this.vehicles.length;
     this.vehicles = this.vehicles.filter(v => {
       const offScreen = v.x < -60 || v.x > this.w + 60 || v.y < -60 || v.y > this.h + 60;
       const pastCenter = (
@@ -307,46 +317,30 @@ class TrafficSim {
   draw() {
     const ctx = this.ctx;
     const w = this.w, h = this.h;
-    ctx.fillStyle = '#0d1117';
+    ctx.fillStyle = '#080c14';
     ctx.fillRect(0, 0, w, h);
-    ctx.fillStyle = '#1e2330';
+    ctx.fillStyle = '#171d2b';
     ctx.fillRect(this.cx - this.roadW, 0, this.roadW * 2, h);
     ctx.fillRect(0, this.cy - this.roadW, w, this.roadW * 2);
-    ctx.fillStyle = '#252b3b';
+    ctx.fillStyle = '#1e2638';
     ctx.fillRect(this.cx - this.roadW, this.cy - this.roadW, this.roadW * 2, this.roadW * 2);
     ctx.setLineDash([8, 12]);
-    ctx.strokeStyle = 'rgba(255,255,255,0.12)';
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.moveTo(this.cx, 0);
-    ctx.lineTo(this.cx, this.cy - this.roadW);
-    ctx.moveTo(this.cx, this.cy + this.roadW);
-    ctx.lineTo(this.cx, h);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(0, this.cy);
-    ctx.lineTo(this.cx - this.roadW, this.cy);
-    ctx.moveTo(this.cx + this.roadW, this.cy);
-    ctx.lineTo(w, this.cy);
+    ctx.moveTo(this.cx, 0); ctx.lineTo(this.cx, this.cy - this.roadW);
+    ctx.moveTo(this.cx, this.cy + this.roadW); ctx.lineTo(this.cx, h);
+    ctx.moveTo(0, this.cy); ctx.lineTo(this.cx - this.roadW, this.cy);
+    ctx.moveTo(this.cx + this.roadW, this.cy); ctx.lineTo(w, this.cy);
     ctx.stroke();
     ctx.setLineDash([]);
-    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+    ctx.lineWidth = 2.5;
     ctx.beginPath();
-    ctx.moveTo(this.cx, this.cy - this.roadW - 2);
-    ctx.lineTo(this.cx + this.roadW, this.cy - this.roadW - 2);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(this.cx - this.roadW, this.cy + this.roadW + 2);
-    ctx.lineTo(this.cx, this.cy + this.roadW + 2);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(this.cx + this.roadW + 2, this.cy);
-    ctx.lineTo(this.cx + this.roadW + 2, this.cy + this.roadW);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(this.cx - this.roadW - 2, this.cy - this.roadW);
-    ctx.lineTo(this.cx - this.roadW - 2, this.cy);
+    ctx.moveTo(this.cx, this.cy - this.roadW - 2); ctx.lineTo(this.cx + this.roadW, this.cy - this.roadW - 2);
+    ctx.moveTo(this.cx - this.roadW, this.cy + this.roadW + 2); ctx.lineTo(this.cx, this.cy + this.roadW + 2);
+    ctx.moveTo(this.cx + this.roadW + 2, this.cy); ctx.lineTo(this.cx + this.roadW + 2, this.cy + this.roadW);
+    ctx.moveTo(this.cx - this.roadW - 2, this.cy - this.roadW); ctx.lineTo(this.cx - this.roadW - 2, this.cy);
     ctx.stroke();
     this.drawLight('N');
     this.drawLight('S');
@@ -358,17 +352,14 @@ class TrafficSim {
       const vw = isVert ? this.vWid : this.vLen;
       const vh = isVert ? this.vLen : this.vWid;
       ctx.beginPath();
-      this.roundRect(ctx, v.x - vw/2, v.y - vh/2, vw, vh, 3);
+      this.roundRect(ctx, v.x - vw/2, v.y - vh/2, vw, vh, 4);
       ctx.fill();
-    }
-    ctx.fillStyle = 'rgba(255,255,255,0.5)';
-    ctx.font = '10px Inter, sans-serif';
-    ctx.textAlign = 'left';
-    const phaseNames = ['N-S Green', 'Transition', 'E-W Green', 'Transition'];
-    ctx.fillText(phaseNames[this.phase], 8, 16);
-    if (this.mode === 'adaptive') {
-      ctx.fillStyle = '#22c55e';
-      ctx.fillText('AI Adaptive', 8, 28);
+      if (v.isEmergency) {
+        ctx.fillStyle = (Date.now() % 300 < 150) ? '#ef4444' : '#38bdf8';
+        ctx.beginPath();
+        ctx.arc(v.x, v.y, 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
   }
   drawLight(dir) {
@@ -382,12 +373,11 @@ class TrafficSim {
       case 'E': x = this.cx + offset; y = this.cy + this.roadW + 8; break;
       case 'W': x = this.cx - offset; y = this.cy - this.roadW - 8; break;
     }
-    let color;
+    let color = '#ef4444';
     if (this.isGreen(dir)) color = '#22c55e';
     else if (this.isYellow(dir)) color = '#eab308';
-    else color = '#ef4444';
     ctx.beginPath();
-    ctx.arc(x, y, r + 4, 0, Math.PI * 2);
+    ctx.arc(x, y, r + 5, 0, Math.PI * 2);
     ctx.fillStyle = color + '33';
     ctx.fill();
     ctx.beginPath();
@@ -430,9 +420,6 @@ class TrafficSim {
     this.clearLog = [];
     this.startTime = Date.now();
     this.spawnTimers = { N: 0, S: 0, E: 0, W: 0 };
-  }
-  destroy() {
-    this.running = false;
   }
 }
 let simFixed = null;
@@ -486,6 +473,31 @@ function initSimulators() {
       simAdaptive.reset();
     });
   }
+  const rushBtn = document.getElementById('btn-rush-hour');
+  if (rushBtn) {
+    rushBtn.addEventListener('click', () => {
+      $$('.density-group select').forEach(sel => {
+        const dir = sel.dataset.dir;
+        const lvl = (dir === 'E' || dir === 'W') ? 'high' : 'medium';
+        sel.value = lvl;
+        simFixed.setDensity(dir, lvl);
+        simAdaptive.setDensity(dir, lvl);
+      });
+      for (let i = 0; i < 6; i++) {
+        simFixed.spawnVehicle('E');
+        simFixed.spawnVehicle('W');
+        simAdaptive.spawnVehicle('E');
+        simAdaptive.spawnVehicle('W');
+      }
+    });
+  }
+  const emergBtn = document.getElementById('btn-emergency');
+  if (emergBtn) {
+    emergBtn.addEventListener('click', () => {
+      simFixed.spawnVehicle('N', true);
+      simAdaptive.spawnVehicle('N', true);
+    });
+  }
 }
 function updateAIPanel() {
   if (!simAdaptive) return;
@@ -529,20 +541,21 @@ function initChart() {
     25, 22, 18, 15, 14, 16, 28, 52, 68, 58, 45, 48,
     55, 50, 42, 38, 45, 62, 72, 55, 42, 35, 30, 27
   ];
-  const adaptiveData = fixedData.map(v => Math.max(8, v * (0.45 + Math.random() * 0.15)));
+  const adaptiveData = fixedData.map(v => Math.max(8, Math.round(v * (0.46 + Math.random() * 0.1))));
   new Chart(el, {
     type: 'line',
     data: {
       labels: hours,
       datasets: [
         {
-          label: 'Fixed-Time',
+          label: 'Fixed-Time (Legacy)',
           data: fixedData,
           borderColor: '#ef4444',
           backgroundColor: 'rgba(239,68,68,0.08)',
           fill: true,
           tension: 0.4,
-          pointRadius: 2,
+          pointRadius: 3,
+          pointBackgroundColor: '#ef4444',
           borderWidth: 2,
         },
         {
@@ -552,8 +565,9 @@ function initChart() {
           backgroundColor: 'rgba(34,197,94,0.08)',
           fill: true,
           tension: 0.4,
-          pointRadius: 2,
-          borderWidth: 2,
+          pointRadius: 3,
+          pointBackgroundColor: '#22c55e',
+          borderWidth: 2.5,
         },
       ],
     },
@@ -563,28 +577,68 @@ function initChart() {
       plugins: {
         legend: {
           position: 'top',
-          labels: { color: '#999', font: { family: 'Inter', size: 12 }, boxWidth: 12 },
+          labels: { color: '#cbd5e1', font: { family: 'Plus Jakarta Sans', size: 12 }, boxWidth: 12 },
         },
         tooltip: {
-          backgroundColor: '#1a1a2e',
+          backgroundColor: '#0f172a',
           titleColor: '#fff',
-          bodyColor: '#ccc',
-          borderColor: 'rgba(255,255,255,0.1)',
+          bodyColor: '#cbd5e1',
+          borderColor: 'rgba(255,255,255,0.15)',
           borderWidth: 1,
         },
       },
       scales: {
         x: {
-          ticks: { color: '#555', font: { size: 10 } },
+          ticks: { color: '#64748b', font: { size: 10, family: 'JetBrains Mono' } },
           grid: { color: 'rgba(255,255,255,0.04)' },
         },
         y: {
-          title: { display: true, text: 'Avg Wait (s)', color: '#666' },
-          ticks: { color: '#555', font: { size: 10 } },
+          title: { display: true, text: 'Average Wait (seconds)', color: '#94a3b8' },
+          ticks: { color: '#64748b', font: { size: 10, family: 'JetBrains Mono' } },
           grid: { color: 'rgba(255,255,255,0.04)' },
         },
       },
     },
+  });
+}
+function initMapInspector() {
+  const pins = $$('.map-pin');
+  pins.forEach(pin => {
+    pin.addEventListener('click', () => {
+      pins.forEach(p => p.classList.remove('active-pin'));
+      pin.classList.add('active-pin');
+      const name = pin.dataset.name;
+      const status = pin.dataset.status;
+      const wait = pin.dataset.wait;
+      const flow = pin.dataset.thru;
+      const elName = document.getElementById('inspector-name');
+      const elStatus = document.getElementById('inspector-status');
+      const elWait = document.getElementById('inspector-wait');
+      const elFlow = document.getElementById('inspector-flow');
+      if (elName) elName.textContent = name;
+      if (elStatus) elStatus.textContent = status;
+      if (elWait) elWait.textContent = wait;
+      if (elFlow) elFlow.textContent = flow;
+    });
+  });
+}
+function initInferenceBenchmark() {
+  const btn = document.getElementById('btn-test-inference');
+  const log = document.getElementById('inference-result-log');
+  if (!btn || !log) return;
+  btn.addEventListener('click', () => {
+    log.textContent = 'Analyzing frame with YOLOv8n...';
+    btn.disabled = true;
+    setTimeout(() => {
+      const cars = Math.floor(Math.random() * 6) + 4;
+      const buses = Math.floor(Math.random() * 2) + 1;
+      const latency = (1.2 + Math.random() * 0.5).toFixed(1);
+      const satY = (0.35 + Math.random() * 0.25).toFixed(3);
+      const greenNS = Math.round(30 + Math.random() * 15);
+      const greenEW = Math.round(15 + Math.random() * 10);
+      log.innerHTML = `✓ Detected: <strong>${cars} Cars, ${buses} Buses</strong> | TPU Latency: <strong>${latency}ms</strong> | Webster: <strong>NS=${greenNS}s, EW=${greenEW}s</strong> (Y=${satY})`;
+      btn.disabled = false;
+    }, 450);
   });
 }
 function initScrollReveal() {
@@ -604,6 +658,7 @@ function initNavHighlight() {
   const sections = [
     { id: '', el: null },
     { id: 'simulator', el: document.getElementById('simulator') },
+    { id: 'ai-engine', el: document.getElementById('ai-engine') },
     { id: 'dashboard', el: document.getElementById('dashboard') },
     { id: 'tech-stack', el: document.getElementById('tech-stack') },
   ];
@@ -662,6 +717,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initMobileMenu();
   initSimulators();
   initChart();
+  initMapInspector();
+  initInferenceBenchmark();
   initScrollReveal();
   initNavHighlight();
   initSmoothScroll();

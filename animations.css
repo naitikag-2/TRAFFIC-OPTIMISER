@@ -1,0 +1,99 @@
+/* ═══════════════════════════════════════════
+   SIGNAL-IQ — animations.css
+   Scroll-animation layer (GSAP ScrollTrigger)
+   ═══════════════════════════════════════════ */
+
+/* ── Hero parallax depth container ── */
+.hero-viewport {
+  perspective: 1200px;
+  perspective-origin: center center;
+}
+.bg {
+  will-change: transform;
+}
+
+/* ── Headline glow pulse (retro dot-matrix) ── */
+@keyframes glowPulse {
+  0%, 100% { text-shadow: 0 0 8px rgba(255,255,255,0.15), 0 0 24px rgba(255,255,255,0.06); }
+  50%      { text-shadow: 0 0 18px rgba(255,255,255,0.35), 0 0 48px rgba(255,255,255,0.12); }
+}
+.headline.glow-active .line {
+  animation: glowPulse 3.2s ease-in-out infinite;
+}
+
+/* ── Simulator control buttons: 3D hover tilt ── */
+.btn-rand, .btn-reset,
+.density-group select {
+  transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s;
+}
+.btn-rand:hover, .btn-reset:hover {
+  transform: translateY(-3px) perspective(600px) rotateX(4deg);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+}
+.density-group select:hover {
+  transform: translateY(-2px) perspective(600px) rotateX(3deg);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+}
+
+/* ── AI Engine: 3D card perspective flip initial state ── */
+.engine-card {
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+/* ── Map pin ping pulse ── */
+@keyframes pingPulse {
+  0%   { box-shadow: 0 0 0 0 currentColor; }
+  70%  { box-shadow: 0 0 0 12px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+.map-pin.ping-active {
+  animation: pingPulse 1.4s ease-out 1;
+}
+
+/* ── Pin tooltip smooth fade ── */
+.pin-tooltip {
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  transform: translateX(-50%) translateY(4px);
+}
+.map-pin:hover .pin-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  display: block;
+}
+
+/* ── Architecture arrow line-draw prep ── */
+.arch-arrow i {
+  display: inline-block;
+  transition: opacity 0.4s;
+}
+
+/* ── Timeline vertical line draw ── */
+.timeline::before {
+  transform-origin: top;
+}
+
+/* ── Impact cards subtle depth ── */
+.impact-card {
+  transform-style: preserve-3d;
+}
+
+/* ── KPI cards will-change hint ── */
+.kpi-card {
+  will-change: transform, opacity;
+}
+
+/* ══════════════════════════════════════════════
+   REDUCED MOTION: disable all scroll animations
+   ══════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .headline.glow-active .line {
+    animation: none !important;
+    text-shadow: none !important;
+  }
+  .map-pin.ping-active {
+    animation: none !important;
+  }
+  /* GSAP will also be disabled via JS matchMedia check */
+}
