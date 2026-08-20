@@ -77,7 +77,7 @@ function initMobileMenu() {
   document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
   window.addEventListener('resize', () => { if (window.innerWidth > 860) close(); });
 }
-const VEHICLE_COLORS = ['#00D4FF', '#00E5A0', '#A78BFA', '#FFB020', '#FF3B4E', '#0891B2', '#7C5CFC'];
+const VEHICLE_COLORS = ['#2563EB', '#0891B2', '#7C3AED', '#D97706', '#64748B'];
 class TrafficSim {
   constructor(canvasId, mode) {
     this.canvas = document.getElementById(canvasId);
@@ -317,15 +317,15 @@ class TrafficSim {
   draw() {
     const ctx = this.ctx;
     const w = this.w, h = this.h;
-    ctx.fillStyle = '#04060A';
+    ctx.fillStyle = '#0F172A';
     ctx.fillRect(0, 0, w, h);
-    ctx.fillStyle = '#0B0F1A';
+    ctx.fillStyle = '#1E293B';
     ctx.fillRect(this.cx - this.roadW, 0, this.roadW * 2, h);
     ctx.fillRect(0, this.cy - this.roadW, w, this.roadW * 2);
-    ctx.fillStyle = '#121826';
+    ctx.fillStyle = '#293548';
     ctx.fillRect(this.cx - this.roadW, this.cy - this.roadW, this.roadW * 2, this.roadW * 2);
     ctx.setLineDash([8, 12]);
-    ctx.strokeStyle = 'rgba(0, 212, 255, 0.2)';
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.moveTo(this.cx, 0); ctx.lineTo(this.cx, this.cy - this.roadW);
@@ -334,7 +334,7 @@ class TrafficSim {
     ctx.moveTo(this.cx + this.roadW, this.cy); ctx.lineTo(w, this.cy);
     ctx.stroke();
     ctx.setLineDash([]);
-    ctx.strokeStyle = 'rgba(241, 245, 249, 0.4)';
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
     ctx.lineWidth = 2.5;
     ctx.beginPath();
     ctx.moveTo(this.cx, this.cy - this.roadW - 2); ctx.lineTo(this.cx + this.roadW, this.cy - this.roadW - 2);
@@ -355,7 +355,7 @@ class TrafficSim {
       this.roundRect(ctx, v.x - vw/2, v.y - vh/2, vw, vh, 4);
       ctx.fill();
       if (v.isEmergency) {
-        ctx.fillStyle = (Date.now() % 300 < 150) ? '#FF3B4E' : '#00D4FF';
+        ctx.fillStyle = (Date.now() % 300 < 150) ? '#DC2626' : '#2563EB';
         ctx.beginPath();
         ctx.arc(v.x, v.y, 4, 0, Math.PI * 2);
         ctx.fill();
@@ -373,9 +373,9 @@ class TrafficSim {
       case 'E': x = this.cx + offset; y = this.cy + this.roadW + 8; break;
       case 'W': x = this.cx - offset; y = this.cy - this.roadW - 8; break;
     }
-    let color = '#FF3B4E';
-    if (this.isGreen(dir)) color = '#00E5A0';
-    else if (this.isYellow(dir)) color = '#FFB020';
+    let color = '#DC2626';
+    if (this.isGreen(dir)) color = '#16A34A';
+    else if (this.isYellow(dir)) color = '#D97706';
     ctx.beginPath();
     ctx.arc(x, y, r + 5, 0, Math.PI * 2);
     ctx.fillStyle = color + '33';
@@ -548,25 +548,26 @@ function initChart() {
       labels: hours,
       datasets: [
         {
-          label: 'Fixed-Time (Legacy)',
+          label: 'Fixed-Time (Baseline)',
           data: fixedData,
-          borderColor: '#FF3B4E',
-          backgroundColor: 'rgba(255, 59, 78, 0.1)',
+          borderColor: '#64748B',
+          backgroundColor: 'rgba(100, 116, 139, 0.08)',
           fill: true,
           tension: 0.4,
           pointRadius: 3,
-          pointBackgroundColor: '#FF3B4E',
+          pointBackgroundColor: '#64748B',
           borderWidth: 2,
+          borderDash: [5, 5],
         },
         {
           label: 'SIGNAL-IQ Adaptive',
           data: adaptiveData,
-          borderColor: '#00E5A0',
-          backgroundColor: 'rgba(0, 229, 160, 0.1)',
+          borderColor: '#2563EB',
+          backgroundColor: 'rgba(37, 99, 235, 0.12)',
           fill: true,
           tension: 0.4,
           pointRadius: 3,
-          pointBackgroundColor: '#00E5A0',
+          pointBackgroundColor: '#2563EB',
           borderWidth: 2.5,
         },
       ],
@@ -577,25 +578,25 @@ function initChart() {
       plugins: {
         legend: {
           position: 'top',
-          labels: { color: '#94A3B8', font: { family: 'Plus Jakarta Sans', size: 12 }, boxWidth: 12 },
+          labels: { color: '#475569', font: { family: 'Inter', size: 12, weight: '500' }, boxWidth: 12 },
         },
         tooltip: {
-          backgroundColor: '#121826',
-          titleColor: '#F1F5F9',
-          bodyColor: '#94A3B8',
-          borderColor: '#1E2636',
+          backgroundColor: '#1E293B',
+          titleColor: '#FFFFFF',
+          bodyColor: '#CBD5E1',
+          borderColor: '#D9E2EC',
           borderWidth: 1,
         },
       },
       scales: {
         x: {
-          ticks: { color: '#4B5670', font: { size: 10, family: 'JetBrains Mono' } },
-          grid: { color: 'rgba(30, 38, 54, 0.6)' },
+          ticks: { color: '#64748B', font: { size: 10, family: 'JetBrains Mono' } },
+          grid: { color: 'rgba(226, 232, 240, 0.8)' },
         },
         y: {
-          title: { display: true, text: 'Average Wait (seconds)', color: '#94A3B8' },
-          ticks: { color: '#4B5670', font: { size: 10, family: 'JetBrains Mono' } },
-          grid: { color: 'rgba(30, 38, 54, 0.6)' },
+          title: { display: true, text: 'Average Wait (seconds)', color: '#475569', font: { family: 'Inter', size: 11, weight: '600' } },
+          ticks: { color: '#64748B', font: { size: 10, family: 'JetBrains Mono' } },
+          grid: { color: 'rgba(226, 232, 240, 0.8)' },
         },
       },
     },
