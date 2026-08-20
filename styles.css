@@ -93,21 +93,21 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 img { display: block; max-width: 100%; }
 
 /* ═══════════════════════════════════════════
-   HERO VIEWPORT (Atmospheric Light Dashboard)
+   HERO VIEWPORT (Clean, Uniform Light Canvas)
    ═══════════════════════════════════════════ */
 .hero-viewport {
   position: relative;
   height: 100vh;
   height: 100dvh;
   overflow: hidden;
-  background: radial-gradient(circle at 50% 25%, rgba(219, 234, 254, 0.7) 0%, rgba(223, 246, 250, 0.45) 40%, #F3F6F8 85%);
+  background: var(--bg-primary);
 }
 
 /* Background video + subtle light ambient grid overlay */
 .bg {
   position: absolute;
   inset: 0;
-  background: transparent;
+  background: var(--bg-primary);
   overflow: hidden;
 }
 .bg-video {
@@ -118,17 +118,16 @@ img { display: block; max-width: 100%; }
   object-fit: cover;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.14;
-  filter: grayscale(35%) contrast(105%);
-  mix-blend-mode: multiply;
+  opacity: 0.18;
+  filter: grayscale(100%) brightness(1.2) contrast(0.9);
 }
 .cyber-grid-overlay {
   position: absolute;
   inset: 0;
   background-image: 
-    linear-gradient(to right, rgba(37, 99, 235, 0.035) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(37, 99, 235, 0.035) 1px, transparent 1px);
-  background-size: 44px 44px;
+    linear-gradient(to right, rgba(37, 99, 235, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(37, 99, 235, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
   pointer-events: none;
   z-index: 1;
 }
