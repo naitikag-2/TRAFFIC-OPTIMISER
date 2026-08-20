@@ -49,7 +49,7 @@ function minifyJS(content) {
 }
 
 // Process CSS files
-console.log('[1/5] Minifying CSS files...');
+console.log('[1/6] Minifying CSS files...');
 const stylesCSS = fs.readFileSync(path.join(src, 'styles.css'), 'utf8');
 fs.writeFileSync(path.join(dist, 'styles.css'), minifyCSS(stylesCSS));
 
@@ -59,7 +59,7 @@ if (fs.existsSync(path.join(src, 'animations.css'))) {
 }
 
 // Process JS files
-console.log('[2/5] Minifying JS files...');
+console.log('[2/6] Minifying JS files...');
 const mainJS = fs.readFileSync(path.join(src, 'main.js'), 'utf8');
 fs.writeFileSync(path.join(dist, 'main.js'), minifyJS(mainJS));
 
@@ -69,13 +69,13 @@ if (fs.existsSync(path.join(src, 'animations.js'))) {
 }
 
 // Process HTML
-console.log('[3/5] Processing HTML...');
+console.log('[3/6] Processing HTML...');
 let indexHTML = fs.readFileSync(path.join(src, 'index.html'), 'utf8');
 indexHTML = indexHTML.replace(/<!--(?!\[)[\s\S]*?-->/g, '').replace(/(\r?\n){3,}/g, '\n\n');
 fs.writeFileSync(path.join(dist, 'index.html'), indexHTML);
 
 // Copy assets
-console.log('[4/5] Copying static assets...');
+console.log('[4/6] Copying static assets...');
 const logoSrc = path.join(src, 'assets', 'logo.webp');
 if (fs.existsSync(logoSrc)) {
   fs.copyFileSync(logoSrc, path.join(dist, 'assets', 'logo.webp'));
@@ -88,4 +88,11 @@ if (fs.existsSync(fontSrc)) {
   console.log('   Copied fonts/GeistPixel-Circle.woff2');
 }
 
-console.log('[5/5] Build Completed successfully for Vercel!\n');
+// Create Vercel Serverless / Node entrypoints in dist
+console.log('[5/6] Generating Vercel server entrypoints (index.js, server.js, app.js)...');
+const apiContent = fs.readFileSync(path.join(src, 'api', 'index.js'), 'utf8');
+fs.writeFileSync(path.join(dist, 'index.js'), apiContent);
+fs.writeFileSync(path.join(dist, 'server.js'), apiContent);
+fs.writeFileSync(path.join(dist, 'app.js'), apiContent);
+
+console.log('[6/6] Build Completed successfully for Vercel!\n');
