@@ -240,9 +240,8 @@
   }
 
   // ═══════════════════════════════════════════
-  // 6. TECH STACK / ARCHITECTURE FLOW
+  // 6. TECH STACK / ARCHITECTURE FLOW (Scroll Story)
   // ═══════════════════════════════════════════
-
   const techSection = document.querySelector('#tech-stack');
   if (techSection) {
     // 6a. Section header
@@ -251,37 +250,106 @@
       scrollTrigger: { trigger: '#tech-stack', start: 'top 80%', toggleActions: 'play none none none' }
     });
 
-    // 6b. Architecture nodes: sequential left-to-right reveal
     const archNodes = document.querySelectorAll('.arch-node');
-    const archArrows = document.querySelectorAll('.arch-arrow');
-    const archItems = [];
+    const archFlow = document.querySelector('.arch-flow');
 
-    // Interleave nodes and arrows for sequential reveal
-    archNodes.forEach((node, i) => {
-      archItems.push(node);
-      if (archArrows[i]) archItems.push(archArrows[i]);
-    });
+    if (archFlow && archNodes.length > 0) {
+      // Create the animated active line element and append it
+      const activeLine = document.createElement('div');
+      activeLine.className = 'arch-flow-line-active';
+      archFlow.appendChild(activeLine);
 
-    gsap.from(archItems, {
-      opacity: 0,
-      x: -20,
-      duration: 0.45,
-      stagger: 0.1,
-      ease: EASE,
-      scrollTrigger: {
-        trigger: '.arch-flow',
-        start: 'top 85%',
-        toggleActions: 'play none none none'
-      }
-    });
+      // Wrap title and small tag in a container so we can fade subtitle separately, without breaking HTML structure.
+      archNodes.forEach(node => {
+        const title = node.querySelector('.node-title');
+        const small = node.querySelector('small');
+        const iconContainer = node.querySelector('.arch-icon');
+        
+        // Add a glow div behind the icon
+        if (iconContainer) {
+          iconContainer.style.position = 'relative';
+          const glow = document.createElement('div');
+          glow.className = 'arch-icon-glow';
+          iconContainer.appendChild(glow);
+        }
 
-    // 6c. Feedback loop label
+        // Setup initial state
+        gsap.set(node, { opacity: 0, y: 40, scale: 0.96 });
+        if (small) gsap.set(small, { opacity: 0 });
+      });
+
+      // 6b. Animate the connector line drawing downwards as we scroll
+      ScrollTrigger.create({
+        trigger: archFlow,
+        start: 'top 60%',
+        end: 'bottom 60%',
+        scrub: 0.3, // smooth scrub
+        animation: gsap.to(activeLine, {
+          scaleY: 1,
+          ease: 'none'
+        })
+      });
+
+      // 6c. Stage Reveal, Pulse, and Subtitle Fade
+      archNodes.forEach((node, i) => {
+        const icon = node.querySelector('.arch-icon');
+        const glow = node.querySelector('.arch-icon-glow');
+        const subtitle = node.querySelector('small');
+
+        ScrollTrigger.create({
+          trigger: node,
+          start: 'top 75%', // triggers when card crosses 75% viewport height
+          id: `archNode-${i}`,
+          once: true, // Only trigger once, no looping
+          onEnter: () => {
+            // Card arrival
+            gsap.to(node, {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              duration: 0.6,
+              ease: 'power2.out',
+              delay: i === 0 ? 0 : 0.15 // small stagger offset for flow feel
+            });
+
+            // Icon Pulse
+            if (icon && glow) {
+              const tl = gsap.timeline({ delay: i === 0 ? 0.2 : 0.35 });
+              tl.to(icon, { scale: 1.15, duration: 0.2, ease: 'power1.out' })
+                .to(glow, { opacity: 0.6, duration: 0.2, ease: 'power1.out' }, '<')
+                .to(icon, { scale: 1, duration: 0.3, ease: 'power2.out' })
+                .to(glow, { opacity: 0, duration: 0.3, ease: 'power2.out' }, '<');
+            }
+
+            // Subtitle fade slightly after
+            if (subtitle) {
+              gsap.to(subtitle, {
+                opacity: 1,
+                duration: 0.5,
+                delay: i === 0 ? 0.4 : 0.55,
+                ease: 'power2.out'
+              });
+            }
+          }
+        });
+
+        // 6d. Active Stage Highlight (Progressive)
+        ScrollTrigger.create({
+          trigger: node,
+          start: 'top 55%',
+          end: 'bottom 45%',
+          toggleClass: { targets: node, className: 'is-active-stage' }
+        });
+      });
+    }
+
+    // Feedback loop label
     gsap.from('.arch-feedback', {
       opacity: 0, y: 12, duration: 0.5, ease: EASE,
       scrollTrigger: { trigger: '.arch-feedback', start: 'top 90%', toggleActions: 'play none none none' }
     });
 
-    // 6d. Tech tags stagger
+    // Tech tags stagger
     gsap.from('.tech-tags span', {
       opacity: 0, y: 12, scale: 0.92, duration: 0.35, stagger: 0.05, ease: EASE,
       scrollTrigger: { trigger: '.tech-tags', start: 'top 90%', toggleActions: 'play none none none' }

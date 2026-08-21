@@ -97,3 +97,83 @@
   }
   /* GSAP will also be disabled via JS matchMedia check */
 }
+/* -------------------------------------------
+   VERTICAL ARCHITECTURE FLOW OVERRIDES
+   ------------------------------------------- */
+/* Force vertical stack for story format */
+.arch-flow {
+  flex-direction: column !important;
+  gap: 16px !important;
+  position: relative;
+  align-items: stretch !important;
+  max-width: 800px;
+  margin: 0 auto 16px auto !important;
+}
+
+/* Hide the old right arrows since it's vertical now */
+.arch-arrow {
+  display: none !important;
+}
+
+/* Make nodes full width, row layout */
+.arch-node {
+  flex-direction: row !important;
+  text-align: left !important;
+  padding: 20px 24px !important;
+  justify-content: flex-start !important;
+  position: relative;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-width: 2px !important;
+}
+
+/* Add vertical connecting line container */
+.arch-flow::before {
+  content: '';
+  position: absolute;
+  top: 40px;
+  bottom: 40px;
+  left: 44px; /* Center with the icons (icon width 40 + padding 24) = roughly 44 */
+  width: 2px;
+  background: #E2E8F0;
+  z-index: 1;
+}
+
+/* The active drawn line (animated by GSAP) */
+.arch-flow-line-active {
+  position: absolute;
+  top: 40px;
+  bottom: 40px;
+  left: 44px;
+  width: 2px;
+  background: var(--accent-primary, #2563EB);
+  z-index: 1;
+  transform-origin: top;
+  transform: scaleY(0);
+}
+
+.arch-node .node-content {
+  display: flex;
+  flex-direction: column;
+  margin-left: 16px;
+}
+
+/* Active Highlight state via JS */
+.arch-node.is-active-stage {
+  border-color: var(--accent-primary, #2563EB) !important;
+  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.15) !important;
+}
+
+/* Icon glow pulse */
+.arch-icon-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  background: var(--accent-primary, #2563EB);
+  opacity: 0;
+  z-index: -1;
+  filter: blur(8px);
+}

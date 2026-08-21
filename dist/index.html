@@ -24,7 +24,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="animations.css" />`n  <link rel="stylesheet" href="arch-story.css" />
+  <link rel="stylesheet" href="animations.css" />
 </head>
 <body>
 
@@ -655,145 +655,53 @@
             <p class="section-sub">Sub-second pipeline from edge CCTV video frames to physical signal hardware commands</p>
           </div>
 
-          <div class="arch-scroll-wrapper" id="archScrollWrapper">
-            <div class="arch-sticky-viewport">
-              
-              <div class="arch-progress-dots">
-                <div class="arch-dot active" data-stage="0"></div>
-                <div class="arch-dot" data-stage="1"></div>
-                <div class="arch-dot" data-stage="2"></div>
-                <div class="arch-dot" data-stage="3"></div>
-                <div class="arch-dot" data-stage="4"></div>
-                <div class="arch-dot" data-stage="5"></div>
-              </div>
-
-              <div class="arch-story-content">
-                
-                <div class="arch-story-text">
-                  <h3 id="archStoryTitle">Capture</h3>
-                  <p id="archStoryDesc">Live camera feeds provide the raw traffic data.</p>
-                </div>
-
-                
-                <div class="arch-pipeline">
-                  <div class="arch-node story-node active" id="sn-0">
-                    <div class="arch-icon"><i class="fa-solid fa-video"></i></div>
-                    <span class="node-title">CCTV / Sensors</span>
-                    <small>RTSP 1080p Feed</small>
-                  </div>
-                  <div class="arch-connector" id="sc-0"><div class="connector-fill"></div><div class="connector-packet"></div></div>
-
-                  <div class="arch-node story-node" id="sn-1">
-                    <div class="arch-icon"><i class="fa-solid fa-microchip"></i></div>
-                    <span class="node-title">Edge AI</span>
-                    <small>YOLOv8 + OpenCV</small>
-                  </div>
-                  <div class="arch-connector" id="sc-1"><div class="connector-fill"></div><div class="connector-packet"></div></div>
-
-                  <div class="arch-node story-node" id="sn-2">
-                    <div class="arch-icon"><i class="fa-solid fa-chart-column"></i></div>
-                    <span class="node-title">Density Matrix</span>
-                    <small>Approach Saturation</small>
-                  </div>
-                  <div class="arch-connector" id="sc-2"><div class="connector-fill"></div><div class="connector-packet"></div></div>
-
-                  <div class="arch-node story-node" id="sn-3">
-                    <div class="arch-icon"><i class="fa-solid fa-brain"></i></div>
-                    <span class="node-title">Timing Optimizer</span>
-                    <small>Webster + RL Q-Agent</small>
-                  </div>
-                  <div class="arch-connector" id="sc-3"><div class="connector-fill"></div><div class="connector-packet"></div></div>
-
-                  <div class="arch-node story-node" id="sn-4">
-                    <div class="arch-icon"><i class="fa-solid fa-server"></i></div>
-                    <span class="node-title">Controller API</span>
-                    <small>REST + MQTT Relay</small>
-                  </div>
-                  <div class="arch-connector" id="sc-4"><div class="connector-fill"></div><div class="connector-packet"></div></div>
-
-                  <div class="arch-node story-node" id="sn-5">
-                    <div class="arch-icon"><i class="fa-solid fa-traffic-light"></i></div>
-                    <span class="node-title">Signal Hardware</span>
-                    <small>Relay / SCATS/SCOOT</small>
-                  </div>
-                </div>
-
-                
-                <div class="arch-dynamic-stage">
-                  
-                  <div class="stage-viz active" id="sviz-0">
-                    <div class="pulse-data">1080p VIDEO FRAME</div>
-                    <div class="pulse-data">30 FPS</div>
-                    <div class="pulse-data">LIVE FEED</div>
-                  </div>
-                  
-                  <div class="stage-viz" id="sviz-1">
-                    <div class="viz-flow-text">FRAME RECEIVED <i class="fa-solid fa-arrow-down"></i> YOLOv8 DETECTION</div>
-                    <div class="viz-stats-box">
-                      <div class="stat-item">Cars: <span id="sv-cars">0</span></div>
-                      <div class="stat-item">Buses: <span id="sv-buses">0</span></div>
-                      <div class="stat-item">Trucks: <span id="sv-trucks">0</span></div>
-                      <div class="stat-item highlight">Total: <span id="sv-total">0</span></div>
-                    </div>
-                  </div>
-                  
-                  <div class="stage-viz" id="sviz-2">
-                    <div class="density-grid-demo" id="sv-grid"></div>
-                    <div class="viz-stats-box horizontal">
-                      <div class="stat-item">N: <span id="sv-dn">0.00</span></div>
-                      <div class="stat-item">S: <span id="sv-ds">0.00</span></div>
-                      <div class="stat-item">E: <span id="sv-de">0.00</span></div>
-                      <div class="stat-item">W: <span id="sv-dw">0.00</span></div>
-                    </div>
-                  </div>
-                  
-                  <div class="stage-viz" id="sviz-3">
-                    <div class="opt-timing-grid">
-                      <div class="opt-dir">N <span class="light-g">🟢 <span id="sv-tn">32s</span></span></div>
-                      <div class="opt-dir">S <span class="light-r">🔴 <span id="sv-ts">18s</span></span></div>
-                      <div class="opt-dir">E <span class="light-g">🟢 <span id="sv-te">24s</span></span></div>
-                      <div class="opt-dir">W <span class="light-r">🔴 <span id="sv-tw">14s</span></span></div>
-                    </div>
-                    <div class="viz-status-label" id="sv-opt-status">RL AGENT OPTIMIZING...</div>
-                    <div class="opt-improvements">
-                      <div class="imp-item">Wait Time <span class="imp-val down">↓ 39.7%</span></div>
-                      <div class="imp-item">Throughput <span class="imp-val up">↑ 24.3%</span></div>
-                      <div class="imp-item">Queue <span class="imp-val down">↓ 31.8%</span></div>
-                    </div>
-                  </div>
-                  
-                  <div class="stage-viz" id="sviz-4">
-                    <div class="api-payload">
-                      <div class="payload-head">POST /api/signals/phase</div>
-                      <div class="payload-body">
-                        {<br>
-                        &nbsp;&nbsp;"command": "UPDATE",<br>
-                        &nbsp;&nbsp;"north": "GREEN", "duration": 36,<br>
-                        &nbsp;&nbsp;"south": "RED", "duration": 14<br>
-                        }
-                      </div>
-                    </div>
-                    <div class="viz-status-label success">COMMAND SENT ✓</div>
-                  </div>
-                  
-                  <div class="stage-viz" id="sviz-5">
-                    <div class="hw-traffic-light">
-                      <div class="tl-light red" id="sv-tl-r"></div>
-                      <div class="tl-light yellow" id="sv-tl-y"></div>
-                      <div class="tl-light green active" id="sv-tl-g"></div>
-                    </div>
-                    <div class="final-result-box">
-                      <h4>AI-OPTIMIZED CONTROL ACTIVE</h4>
-                      <div class="final-stats">
-                        <span>Response: 184ms</span>
-                        <span>Vehicles: 57</span>
-                        <span>Cycle: 36s</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <div class="arch-flow">
+            <div class="arch-node">
+              <div class="arch-icon"><i class="fa-solid fa-video"></i></div>
+              <span class="node-title">CCTV / Sensors</span>
+              <small>RTSP 1080p Feed</small>
             </div>
+            <div class="arch-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+            <div class="arch-node">
+              <div class="arch-icon"><i class="fa-solid fa-microchip"></i></div>
+              <span class="node-title">Edge AI</span>
+              <small>YOLOv8 + OpenCV</small>
+            </div>
+            <div class="arch-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+            <div class="arch-node">
+              <div class="arch-icon"><i class="fa-solid fa-chart-column"></i></div>
+              <span class="node-title">Density Matrix</span>
+              <small>Approach Saturation (Y)</small>
+            </div>
+            <div class="arch-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+            <div class="arch-node highlight">
+              <div class="arch-icon"><i class="fa-solid fa-brain"></i></div>
+              <span class="node-title">Timing Optimizer</span>
+              <small>Webster + RL Q-Agent</small>
+            </div>
+            <div class="arch-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+            <div class="arch-node">
+              <div class="arch-icon"><i class="fa-solid fa-server"></i></div>
+              <span class="node-title">Controller API</span>
+              <small>REST + MQTT Relay</small>
+            </div>
+            <div class="arch-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+            <div class="arch-node">
+              <div class="arch-icon"><i class="fa-solid fa-traffic-light"></i></div>
+              <span class="node-title">Signal Hardware</span>
+              <small>Relay / SCATS/SCOOT</small>
+            </div>
+          </div>
+
+          <div class="arch-feedback">
+            <span class="pulse-dot"></span>
+            <span>Continuous RL state-action feedback loop (1.5s update cadence)</span>
+          </div>
+
+          <div class="tech-tags">
+            <span>YOLO v8n</span><span>OpenCV</span><span>Node.js / Express</span>
+            <span>WebSocket Telemetry</span><span>Google Coral Edge TPU</span>
+            <span>Webster's Formula</span><span>Q-Learning Agent</span><span>Chart.js 4.4</span>
           </div>
         </div>
       </section>
