@@ -177,3 +177,25 @@
   z-index: -1;
   filter: blur(8px);
 }
+/* Details section (hidden by default) */
+.arch-node {
+  cursor: pointer;
+}
+.node-details {
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  margin-top: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  
+}
+.node-details p {
+  margin: 0;
+}
+.arch-node.is-expanded .node-details {
+  height: auto;
+  opacity: 1;
+  margin-top: 10px;
+}

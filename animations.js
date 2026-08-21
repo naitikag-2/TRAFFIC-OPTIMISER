@@ -340,6 +340,34 @@
           end: 'bottom 45%',
           toggleClass: { targets: node, className: 'is-active-stage' }
         });
+
+        // 6e. Click to expand details
+        const details = node.querySelector('.node-details');
+        if (details) {
+          gsap.set(details, { height: 0, opacity: 0 }); // Initial state
+          
+          node.addEventListener('click', () => {
+            const isExpanded = node.classList.contains('is-expanded');
+            
+            // Optional: close other nodes (accordion style)
+            /*
+            archNodes.forEach(otherNode => {
+              if (otherNode !== node && otherNode.classList.contains('is-expanded')) {
+                otherNode.classList.remove('is-expanded');
+                gsap.to(otherNode.querySelector('.node-details'), { height: 0, opacity: 0, marginTop: 0, duration: 0.3, ease: 'power2.out' });
+              }
+            });
+            */
+            
+            if (isExpanded) {
+              node.classList.remove('is-expanded');
+              gsap.to(details, { height: 0, opacity: 0, marginTop: 0, duration: 0.3, ease: 'power2.out' });
+            } else {
+              node.classList.add('is-expanded');
+              gsap.to(details, { height: 'auto', opacity: 1, marginTop: 10, duration: 0.4, ease: 'power2.out' });
+            }
+          });
+        }
       });
     }
 
