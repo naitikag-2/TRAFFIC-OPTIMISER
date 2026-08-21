@@ -1,0 +1,400 @@
+/* ═══════════════════════════════════════════
+   SCROLL-DRIVEN ARCHITECTURE STORY
+   ═══════════════════════════════════════════ */
+
+/* The main scroll wrapper creates the tall scrollable area */
+.arch-scroll-wrapper {
+  position: relative;
+  height: 600vh; /* Make the section very tall */
+  margin-top: 40px;
+}
+
+/* The sticky viewport stays on screen while user scrolls */
+.arch-sticky-viewport {
+  position: sticky;
+  top: 68px; /* Below the header */
+  height: calc(100vh - 68px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  padding: 20px;
+}
+
+/* Progress indicator dots */
+.arch-progress-dots {
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 10;
+}
+.arch-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #CBD5E1;
+  transition: background 0.3s, transform 0.3s;
+}
+.arch-dot.active {
+  background: var(--accent-primary);
+  transform: scale(1.4);
+}
+
+.arch-story-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1000px;
+}
+
+/* Dynamic text */
+.arch-story-text {
+  text-align: center;
+  margin-bottom: 40px;
+  height: 80px;
+}
+.arch-story-text h3 {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  transition: opacity 0.4s, transform 0.4s;
+}
+.arch-story-text p {
+  font-size: 16px;
+  color: var(--text-secondary);
+  transition: opacity 0.4s, transform 0.4s;
+}
+
+/* Pipeline Layout */
+.arch-pipeline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  position: relative;
+  margin-bottom: 50px;
+}
+
+.story-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 130px;
+  height: 120px;
+  background: #FFFFFF;
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(15, 30, 60, 0.04);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), 
+              border-color 0.4s, box-shadow 0.4s, opacity 0.4s;
+  opacity: 0.45;
+  transform: scale(0.92);
+  z-index: 2;
+  position: relative;
+}
+
+.story-node:hover {
+  transform: translateY(-4px) scale(0.96);
+  border-color: var(--accent-primary);
+}
+
+.story-node.active {
+  opacity: 1;
+  transform: scale(1.05);
+  border-color: var(--accent-primary);
+  box-shadow: 0 8px 30px rgba(37, 99, 235, 0.15);
+}
+.story-node.active .arch-icon {
+  background: #EFF6FF;
+  color: var(--accent-primary);
+}
+
+/* Connectors */
+.arch-connector {
+  flex: 1;
+  height: 2px;
+  background: #D9E2EC;
+  position: relative;
+  z-index: 1;
+  min-width: 20px;
+}
+.connector-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background: var(--accent-primary);
+  transition: width 0.6s ease;
+}
+.arch-connector.active .connector-fill {
+  width: 100%;
+}
+.connector-packet {
+  position: absolute;
+  top: -3px;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  box-shadow: 0 0 8px var(--accent-primary);
+  opacity: 0;
+}
+.arch-connector.active .connector-packet {
+  animation: movePacket 1s ease-in-out infinite;
+  opacity: 1;
+}
+
+@keyframes movePacket {
+  0% { left: 0; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { left: calc(100% - 8px); opacity: 0; }
+}
+
+/* Stage Visualization Container */
+.arch-dynamic-stage {
+  width: 100%;
+  max-width: 600px;
+  height: 220px;
+  background: #FFFFFF;
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(15, 30, 60, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.stage-viz {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: opacity 0.4s, transform 0.4s;
+  padding: 20px;
+}
+.stage-viz.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* Specific Stage Styling */
+.pulse-data {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent-primary);
+  background: #EFF6FF;
+  padding: 8px 16px;
+  border-radius: 20px;
+  margin: 6px 0;
+  animation: pulseBg 2s infinite alternate;
+}
+@keyframes pulseBg {
+  from { box-shadow: 0 0 0 rgba(37,99,235,0); }
+  to { box-shadow: 0 0 12px rgba(37,99,235,0.2); }
+}
+
+.viz-stats-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #F8FAFC;
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: 1px solid var(--border-light);
+  font-family: var(--font-mono);
+  font-size: 14px;
+}
+.viz-stats-box.horizontal {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.viz-stats-box .highlight {
+  font-weight: 700;
+  color: var(--accent-primary);
+  border-top: 1px solid var(--border-light);
+  padding-top: 8px;
+  margin-top: 4px;
+}
+
+.viz-flow-text {
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 12px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.density-grid-demo {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  margin-bottom: 16px;
+}
+.density-cell {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  transition: background 0.5s;
+}
+.dc-low { background: var(--accent-primary); }
+.dc-med { background: #EAB308; }
+.dc-high { background: #EF4444; }
+
+.opt-timing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.opt-dir {
+  background: #F8FAFC;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  width: 120px;
+}
+.opt-dir span { font-weight: normal; }
+
+.viz-status-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent-primary);
+  background: #EFF6FF;
+  padding: 6px 12px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+.viz-status-label.success {
+  color: #10B981;
+  background: #D1FAE5;
+}
+
+.opt-improvements {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.imp-val.down { color: #10B981; }
+.imp-val.up { color: #10B981; }
+
+.api-payload {
+  background: #1E293B;
+  color: #E2E8F0;
+  border-radius: 8px;
+  padding: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-align: left;
+  width: 240px;
+  margin-bottom: 12px;
+}
+.payload-head {
+  color: #38BDF8;
+  margin-bottom: 8px;
+}
+
+.hw-traffic-light {
+  background: #1E293B;
+  padding: 8px;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.tl-light {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #334155;
+  opacity: 0.3;
+  transition: opacity 0.3s, background 0.3s, box-shadow 0.3s;
+}
+.tl-light.red.active { background: #EF4444; opacity: 1; box-shadow: 0 0 12px #EF4444; }
+.tl-light.yellow.active { background: #EAB308; opacity: 1; box-shadow: 0 0 12px #EAB308; }
+.tl-light.green.active { background: #10B981; opacity: 1; box-shadow: 0 0 12px #10B981; }
+
+.final-result-box {
+  text-align: center;
+}
+.final-result-box h4 {
+  font-size: 14px;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.final-stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.final-stats span {
+  background: #F8FAFC;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border-light);
+}
+
+/* Responsive: Vertical timeline for mobile */
+@media (max-width: 768px) {
+  .arch-pipeline {
+    flex-direction: column;
+    margin-bottom: 24px;
+  }
+  .arch-connector {
+    width: 2px;
+    height: 20px;
+    min-height: 20px;
+  }
+  .connector-fill {
+    width: 100%;
+    height: 0%;
+    transition: height 0.6s ease;
+  }
+  .arch-connector.active .connector-fill {
+    height: 100%;
+  }
+  .connector-packet {
+    top: 0; left: -3px;
+  }
+  @keyframes movePacket {
+    0% { top: 0; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { top: calc(100% - 8px); opacity: 0; }
+  }
+  .arch-dynamic-stage {
+    height: 280px;
+  }
+}
