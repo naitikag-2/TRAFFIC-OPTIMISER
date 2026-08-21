@@ -1,4 +1,4 @@
-/* ═══════════════════════════════════════════════════════════
+﻿/* ═══════════════════════════════════════════════════════════
    SIGNAL-IQ — styles.css
    Premium AI Smart-City Traffic Management Dashboard Theme
    SIH 2026 AI Urban Traffic Signal Optimization
@@ -113,15 +113,9 @@ img { display: block; max-width: 100%; }
 .hero-viewport .subhead {
   color: rgba(241, 245, 249, 0.80) !important;
 }
-.hero-viewport .stat-val {
-  color: #F1F5F9 !important;
-}
-.hero-viewport .stat-label {
-  color: rgba(241, 245, 249, 0.65) !important;
-}
-.hero-viewport .stat-icon {
-  color: rgba(241, 245, 249, 0.5) !important;
-}
+.hero-viewport .stat-val { color: #172033 !important; }
+.hero-viewport .stat-label { color: #64748B !important; }
+.hero-viewport .stat-icon { color: rgba(100, 116, 139, 0.5) !important; }
 /* Stats footer bar background — needs to be semi-transparent dark, not white */
 .hero-viewport .stats {
   background: rgba(5, 7, 13, 0.5) !important;
@@ -2116,3 +2110,4 @@ img { display: block; max-width: 100%; }
   .telemetry-stats-grid { grid-template-columns: 1fr; }
   .inspector-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
