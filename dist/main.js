@@ -90,8 +90,8 @@ class TrafficSim {
     this.phase = 0;
     this.phaseStart = Date.now();
     this.phaseDurations = mode === 'fixed'
-      ? [30000, 3000, 30000, 3000]
-      : [30000, 3000, 30000, 3000];
+      ? [15000, 3000, 15000, 3000, 15000, 3000, 15000, 3000]
+      : [15000, 3000, 15000, 3000, 15000, 3000, 15000, 3000];
     this.emergencyActive = false;
     this.spawnTimers = { N: 0, S: 0, E: 0, W: 0 };
     this.totalWait = 0;
@@ -136,43 +136,50 @@ class TrafficSim {
     return 1200;
   }
   isGreen(dir) {
-    if (this.phase === 0) return dir === 'N' || dir === 'S';
-    if (this.phase === 2) return dir === 'E' || dir === 'W';
+    if (this.phase === 0) return dir === 'N';
+    if (this.phase === 2) return dir === 'E';
+    if (this.phase === 4) return dir === 'S';
+    if (this.phase === 6) return dir === 'W';
     return false;
   }
   isYellow(dir) {
-    if (this.phase === 1) return dir === 'N' || dir === 'S';
-    if (this.phase === 3) return dir === 'E' || dir === 'W';
+    if (this.phase === 1) return dir === 'N';
+    if (this.phase === 3) return dir === 'E';
+    if (this.phase === 5) return dir === 'S';
+    if (this.phase === 7) return dir === 'W';
     return false;
   }
   updateSignal() {
     const now = Date.now();
     const elapsed = now - this.phaseStart;
     if (this.mode === 'adaptive') {
-      const hasEmergency = this.vehicles.some(v => v.isEmergency && (v.dir === 'N' || v.dir === 'S'));
+      const hasEmergency = this.vehicles.some(v => v.isEmergency);
       if (hasEmergency) {
-        if (this.phase !== 0) {
-          this.phase = 0;
+        const emV = this.vehicles.find(v => v.isEmergency);
+        let targetPhase = 0;
+        if (emV.dir === 'N') targetPhase = 0;
+        if (emV.dir === 'E') targetPhase = 2;
+        if (emV.dir === 'S') targetPhase = 4;
+        if (emV.dir === 'W') targetPhase = 6;
+        if (this.phase !== targetPhase) {
+          this.phase = targetPhase;
           this.phaseStart = now;
-          this.phaseDurations[0] = 30000;
+          this.phaseDurations[targetPhase] = 30000;
         }
-      } else if (this.phase === 0 || this.phase === 2) {
-        const nsQ = this.vehicles.filter(v => (v.dir === 'N' || v.dir === 'S') && v.waiting).length;
-        const ewQ = this.vehicles.filter(v => (v.dir === 'E' || v.dir === 'W') && v.waiting).length;
-        const totalQ = nsQ + ewQ || 1;
-        if (this.phase === 0) {
-          const ratio = nsQ / totalQ;
-          this.phaseDurations[0] = Math.max(8000, Math.min(48000, ratio * 50000 + 6000));
-          this.phaseDurations[2] = Math.max(8000, Math.min(48000, (1 - ratio) * 50000 + 6000));
-        } else {
-          const ratio = ewQ / totalQ;
-          this.phaseDurations[2] = Math.max(8000, Math.min(48000, ratio * 50000 + 6000));
-          this.phaseDurations[0] = Math.max(8000, Math.min(48000, (1 - ratio) * 50000 + 6000));
-        }
+      } else if (this.phase % 2 === 0) {
+        const nQ = this.vehicles.filter(v => v.dir === 'N' && v.waiting).length;
+        const eQ = this.vehicles.filter(v => v.dir === 'E' && v.waiting).length;
+        const sQ = this.vehicles.filter(v => v.dir === 'S' && v.waiting).length;
+        const wQ = this.vehicles.filter(v => v.dir === 'W' && v.waiting).length;
+        const totalQ = nQ + eQ + sQ + wQ || 1;
+        this.phaseDurations[0] = Math.max(8000, Math.min(48000, (nQ / totalQ) * 50000 + 6000));
+        this.phaseDurations[2] = Math.max(8000, Math.min(48000, (eQ / totalQ) * 50000 + 6000));
+        this.phaseDurations[4] = Math.max(8000, Math.min(48000, (sQ / totalQ) * 50000 + 6000));
+        this.phaseDurations[6] = Math.max(8000, Math.min(48000, (wQ / totalQ) * 50000 + 6000));
       }
     }
     if (elapsed >= this.phaseDurations[this.phase]) {
-      this.phase = (this.phase + 1) % 4;
+      this.phase = (this.phase + 1) % 8;
       this.phaseStart = now;
     }
   }
@@ -524,16 +531,16 @@ function updateAIPanel() {
       bar.className = 'lane-bar ' + barClass;
     }
   }
-  const nsD = simAdaptive.phaseDurations[0] / 1000;
-  const ewD = simAdaptive.phaseDurations[2] / 1000;
+  const nsD = (simAdaptive.phaseDurations[0] + simAdaptive.phaseDurations[4]) / 1000;
+  const ewD = (simAdaptive.phaseDurations[2] + simAdaptive.phaseDurations[6]) / 1000;
   const nsEl = document.getElementById('ai-ns');
   const ewEl = document.getElementById('ai-ew');
   const nsBar = document.getElementById('ai-ns-bar');
   const ewBar = document.getElementById('ai-ew-bar');
   if (nsEl) nsEl.textContent = nsD.toFixed(0) + 's';
   if (ewEl) ewEl.textContent = ewD.toFixed(0) + 's';
-  if (nsBar) nsBar.style.width = (nsD / 50 * 100) + '%';
-  if (ewBar) ewBar.style.width = (ewD / 50 * 100) + '%';
+  if (nsBar) nsBar.style.width = Math.min(100, (nsD / 100 * 100)) + '%';
+  if (ewBar) ewBar.style.width = Math.min(100, (ewD / 100 * 100)) + '%';
   const conf = document.getElementById('ai-conf');
   if (conf) {
     const base = 93 + Math.random() * 5;
