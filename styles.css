@@ -99,17 +99,41 @@ img { display: block; max-width: 100%; }
   position: relative;
   min-height: calc(100vh - 68px);
   overflow: hidden;
-  background: var(--bg-primary);
+  background: #05070d; /* dark — prevents white bleed while video loads */
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+/* ── Hero text overrides — all text inside hero renders white over dark video ── */
+.hero-viewport .headline {
+  color: #F1F5F9 !important;
+  text-shadow: 0 2px 16px rgba(0,0,0,0.5);
+}
+.hero-viewport .subhead {
+  color: rgba(241, 245, 249, 0.80) !important;
+}
+.hero-viewport .stat-val {
+  color: #F1F5F9 !important;
+}
+.hero-viewport .stat-label {
+  color: rgba(241, 245, 249, 0.65) !important;
+}
+.hero-viewport .stat-icon {
+  color: rgba(241, 245, 249, 0.5) !important;
+}
+/* Stats footer bar background — needs to be semi-transparent dark, not white */
+.hero-viewport .stats {
+  background: rgba(5, 7, 13, 0.5) !important;
+  border-top-color: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(8px);
 }
 
 /* Background video + subtle light ambient grid overlay */
 .bg {
   position: absolute;
   inset: 0;
-  background: var(--bg-primary);
+  background: #05070d; /* dark fallback — prevents white bleed-through while video loads */
   overflow: hidden;
 }
 .bg-video {
@@ -120,16 +144,25 @@ img { display: block; max-width: 100%; }
   object-fit: cover;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.18;
-  filter: grayscale(100%) brightness(1.2) contrast(0.9);
+  opacity: 0.85; /* was 0.18 — the main culprit, video was nearly invisible */
+  filter: brightness(0.9) contrast(1.05) saturate(1.1); /* was grayscale(100%) brightness(1.2) — stripped all colour */
 }
 .cyber-grid-overlay {
   position: absolute;
   inset: 0;
-  background-image: 
-    linear-gradient(to right, rgba(37, 99, 235, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(37, 99, 235, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
+  /* Dark gradient: lighter at top (video visible), darker at bottom (text readability) */
+  background: linear-gradient(
+    180deg,
+    rgba(5, 7, 13, 0.25) 0%,
+    rgba(5, 7, 13, 0.45) 50%,
+    rgba(5, 7, 13, 0.75) 100%
+  );
+  /* Subtle grid on top of gradient */
+  background-image:
+    linear-gradient(180deg, rgba(5,7,13,0.25) 0%, rgba(5,7,13,0.75) 100%),
+    linear-gradient(to right, rgba(37, 99, 235, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(37, 99, 235, 0.04) 1px, transparent 1px);
+  background-size: 100% 100%, 40px 40px, 40px 40px;
   pointer-events: none;
   z-index: 1;
 }
