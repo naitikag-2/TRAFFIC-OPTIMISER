@@ -163,3 +163,133 @@
   #wt-box { padding: 14px 16px; }
   .wt-text { font-size: 13px; }
 }
+
+/* CORRIDORS TAB */
+.corridor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 32px;
+}
+.corridor-card {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.corridor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.corridor-name {
+  font-weight: 700;
+  font-size: 16px;
+  color: #1e293b;
+}
+.corridor-status {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+}
+.corridor-status.busy { background: #fee2e2; color: #ef4444; }
+.corridor-status.moderate { background: #fef3c7; color: #f59e0b; }
+.corridor-status.free { background: #dcfce7; color: #22c55e; }
+
+.highway-view {
+  height: 120px;
+  background: #334155;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.highway-lines {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: repeating-linear-gradient(90deg, #fff 0, #fff 20px, transparent 20px, transparent 40px);
+  transform: translateY(-50%);
+  animation: highwayScroll 0.8s linear infinite;
+}
+@keyframes highwayScroll {
+  to { background-position: -40px 0; }
+}
+.highway-view.stopped .highway-lines {
+  animation-play-state: paused;
+}
+.traffic-light-mini {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #1e293b;
+  padding: 6px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border: 2px solid #0f172a;
+  z-index: 2;
+}
+.tl-bulb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #475569;
+  opacity: 0.3;
+  transition: 0.2s;
+}
+.tl-bulb.red.active { background: #ef4444; opacity: 1; box-shadow: 0 0 10px #ef4444; }
+.tl-bulb.yellow.active { background: #eab308; opacity: 1; box-shadow: 0 0 10px #eab308; }
+.tl-bulb.green.active { background: #22c55e; opacity: 1; box-shadow: 0 0 10px #22c55e; }
+
+.car-sprite {
+  position: absolute;
+  width: 30px;
+  height: 16px;
+  background: #60a5fa;
+  border-radius: 4px;
+  left: -40px;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+}
+.car-sprite::after, .car-sprite::before {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 4px;
+  background: #fff;
+  right: -2px;
+  border-radius: 50%;
+  box-shadow: 0 0 4px #fff;
+}
+.car-sprite::before { top: 2px; }
+.car-sprite::after { bottom: 2px; }
+
+.car-sprite.c1 { top: 25%; background: #60a5fa; }
+.car-sprite.c2 { top: 65%; background: #fb7185; }
+.car-sprite.c3 { top: 45%; background: #c084fc; }
+
+@keyframes driveBy {
+  from { transform: translateX(0); }
+  to { transform: translateX(400px); }
+}
+
+.highway-view:not(.stopped) .car-sprite.c1 { animation: driveBy 2s linear infinite; }
+.highway-view:not(.stopped) .car-sprite.c2 { animation: driveBy 2.5s linear infinite 0.5s; }
+.highway-view:not(.stopped) .car-sprite.c3 { animation: driveBy 1.8s linear infinite 1s; }
+
+.highway-view.stopped .car-sprite {
+  animation: none !important;
+  left: 20px;
+}
+.highway-view.stopped .car-sprite.c2 { left: 60px; }
+.highway-view.stopped .car-sprite.c3 { left: 100px; }

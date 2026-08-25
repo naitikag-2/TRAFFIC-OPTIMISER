@@ -48,6 +48,7 @@
       <button class="nav-tab-btn" data-tab="simulator"><i class="fa-solid fa-traffic-light"></i> Simulator</button>
       <button class="nav-tab-btn" data-tab="ai-engine"><i class="fa-solid fa-brain"></i> AI Engine</button>
       <button class="nav-tab-btn" data-tab="dashboard"><i class="fa-solid fa-map-location-dot"></i> GIS Command</button>
+      <button class="nav-tab-btn" data-tab="corridors"><i class="fa-solid fa-road"></i> Live Corridors</button>
       <button class="nav-tab-btn" data-tab="architecture"><i class="fa-solid fa-diagram-project"></i> Architecture</button>
     </nav>
 
@@ -71,6 +72,7 @@
     <button class="mm-link" data-tab="simulator"><i class="fa-solid fa-traffic-light"></i> Live Simulator</button>
     <button class="mm-link" data-tab="ai-engine"><i class="fa-solid fa-brain"></i> AI Recommendation Engine</button>
     <button class="mm-link" data-tab="dashboard"><i class="fa-solid fa-chart-pie"></i> City Dashboard</button>
+    <button class="mm-link" data-tab="corridors"><i class="fa-solid fa-road"></i> Live Corridors</button>
     <button class="mm-link" data-tab="architecture"><i class="fa-solid fa-diagram-project"></i> Architecture</button>
     <div class="mm-status">
       <span class="status-dot"></span>
@@ -671,6 +673,64 @@
     <!-- ──────────────────────────────────────────────
          TAB 5: DEDICATED SYSTEM ARCHITECTURE & ROADMAP
          ────────────────────────────────────────────── -->
+        <!-- =========================================================================
+         TAB: LIVE CORRIDORS
+         ========================================================================= -->
+    <div class="tab-panel" id="tab-corridors">
+      <section id="corridors" class="section">
+        <div class="section-inner">
+          <div class="workspace-topbar">
+            <div class="workspace-breadcrumb">
+              <button data-tab="home"><i class="fa-solid fa-house"></i> Home</button>
+              <span class="sep">/</span>
+              <span class="current">Live City Corridors</span>
+            </div>
+            <div class="workspace-actions">
+              <button class="btn-ws-back" data-tab="home"><i class="fa-solid fa-arrow-left"></i> Back</button>
+            </div>
+          </div>
+
+          <div class="section-header-wrap city-header-flex">
+            <div>
+              <span class="section-tag"><i class="fa-solid fa-road"></i> Corridor Tracking</span>
+              <h2 class="section-title">Live Highway Transitions</h2>
+              <p class="section-sub">Monitor busy signals and track active traffic lights across major city corridors in real-time.</p>
+            </div>
+            <div class="city-selector-box">
+              <label for="corridor-city-select"><i class="fa-solid fa-city"></i> Select City:</label>
+              <div class="city-select-wrapper">
+                <select id="corridor-city-select" class="city-dropdown">
+                  <option value="delhi" selected>Delhi NCR</option>
+                  <option value="bengaluru">Bengaluru</option>
+                  <option value="mumbai">Mumbai</option>
+                  <option value="hyderabad">Hyderabad</option>
+                  <option value="chennai">Chennai</option>
+                  <option value="kolkata">Kolkata</option>
+                  <option value="pune">Pune</option>
+                  <option value="ahmedabad">Ahmedabad</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="corridor-grid" id="corridor-grid">
+            <!-- JS will inject corridor cards here -->
+          </div>
+        </div>
+      </section>
+      
+      <!-- Footer -->
+      <footer class="site-footer">
+        <div class="footer-inner">
+          <div class="footer-brand">
+            <img src="assets/logo.webp" alt="SIGNAL-IQ" width="32" height="32" />
+            <span class="footer-title">SIGNAL-IQ Live Corridors</span>
+          </div>
+          <p class="footer-copy">Advanced Urban Traffic Signal Optimization</p>
+        </div>
+      </footer>
+    </div>
+
     <div class="tab-panel" id="tab-architecture">
       <!-- Section: Tech Stack -->
       <section id="tech-stack" class="section">
@@ -860,6 +920,7 @@
   <script src="animations.js"></script>
 
   <!-- ══ HACKATHON FEATURE PACK ══ (safe to remove any one independently) -->
+  <script src="corridors.js"></script>
   <script src="judge-mode.js"></script>
   <script src="walkthrough.js"></script>
   <script src="simulator-enhancements.js"></script>
@@ -881,6 +942,8 @@
   </script>
 </body>
 </html>
+
+
 
 
 
