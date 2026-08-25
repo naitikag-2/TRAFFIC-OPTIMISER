@@ -36,24 +36,22 @@
       card.className = 'corridor-card';
       card.dataset.idx = idx;
       
-      card.innerHTML = \
-        <div class="corridor-header">
-          <div class="corridor-name">\</div>
-          <div class="corridor-status \">\</div>
-        </div>
-        <div class="highway-view \">
-          <div class="highway-lines"></div>
-          <div class="car-sprite c1"></div>
-          <div class="car-sprite c2"></div>
-          <div class="car-sprite c3"></div>
-          <div class="traffic-light-mini">
-            <div class="tl-bulb red \"></div>
-            <div class="tl-bulb yellow \"></div>
-            <div class="tl-bulb green \"></div>
-          </div>
-        </div>
-      \;
+      let html = '<div class="corridor-header">';
+      html += '<div class="corridor-name">' + name + '</div>';
+      html += '<div class="corridor-status ' + state.status + '">' + state.label + '</div>';
+      html += '</div>';
+      html += '<div class="highway-view ' + stoppedClass + '">';
+      html += '<div class="highway-lines"></div>';
+      html += '<div class="car-sprite c1"></div>';
+      html += '<div class="car-sprite c2"></div>';
+      html += '<div class="car-sprite c3"></div>';
+      html += '<div class="traffic-light-mini">';
+      html += '<div class="tl-bulb red ' + (state.color === 'red' ? 'active' : '') + '"></div>';
+      html += '<div class="tl-bulb yellow ' + (state.color === 'yellow' ? 'active' : '') + '"></div>';
+      html += '<div class="tl-bulb green ' + (state.color === 'green' ? 'active' : '') + '"></div>';
+      html += '</div></div>';
       
+      card.innerHTML = html;
       grid.appendChild(card);
     });
   }
@@ -61,16 +59,13 @@
   function simulateLights() {
     const cards = document.querySelectorAll('.corridor-card');
     cards.forEach(card => {
-      // 20% chance to change state
       if (Math.random() < 0.2) {
         const state = getRandomState();
         
-        // update status label
         const statusEl = card.querySelector('.corridor-status');
-        statusEl.className = \corridor-status \\;
+        statusEl.className = 'corridor-status ' + state.status;
         statusEl.textContent = state.label;
         
-        // update highway view
         const hwView = card.querySelector('.highway-view');
         if (state.color === 'red') {
           hwView.classList.add('stopped');
@@ -78,7 +73,6 @@
           hwView.classList.remove('stopped');
         }
         
-        // update lights
         const bulbs = card.querySelectorAll('.tl-bulb');
         bulbs.forEach(b => b.classList.remove('active'));
         card.querySelector('.tl-bulb.' + state.color).classList.add('active');
@@ -95,7 +89,6 @@
       renderCorridors(sel.value);
     }
     
-    // update every 3 seconds
     if (updateInterval) clearInterval(updateInterval);
     updateInterval = setInterval(simulateLights, 3000);
     
