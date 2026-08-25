@@ -1,4 +1,4 @@
-/* ═══════════════════════════════════════════
+﻿/* ═══════════════════════════════════════════
    SIGNAL-IQ — main.js
    Taste-Skill Interactive Logic & Simulator Engine
    ═══════════════════════════════════════════ */
@@ -1141,7 +1141,7 @@ function initScrollReveal() {
 // ═══════════════════════════════════════════
 // 10. ENTERPRISE MULTI-TAB ROUTER
 // ═══════════════════════════════════════════
-const VALID_TABS = ['home', 'simulator', 'ai-engine', 'dashboard', 'architecture'];
+const VALID_TABS = ['home', 'simulator', 'ai-engine', 'dashboard', 'corridors', 'architecture'];
 const TAB_ALIASES = { 'tech-stack': 'architecture', 'roadmap': 'architecture', 'impact': 'home' };
 // Keyboard shortcuts: key → tab
 const KEY_SHORTCUTS = {
@@ -1304,4 +1304,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initTabRouter();
   initWebSocketBackend();
 });
+
 

@@ -14,8 +14,8 @@
   let jmCountdownInterval = null;
   let jmSecondsLeft = 7;
 
-  const JM_TABS    = ['home', 'simulator', 'ai-engine', 'dashboard', 'architecture'];
-  const JM_LABELS  = ['Home', 'Simulator', 'AI Engine', 'GIS Command', 'Architecture'];
+  const JM_TABS    = ['home', 'simulator', 'ai-engine', 'dashboard', 'corridors', 'architecture'];
+  const JM_LABELS  = ['Home', 'Simulator', 'AI Engine', 'GIS Command', 'Live Corridors', 'Architecture'];
   const JM_DWELL   = 7000; // ms per section
 
   /* ── DOM refs (injected by init) ─────────────────────────── */
@@ -149,3 +149,4 @@
     init();
   }
 })();
+

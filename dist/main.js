@@ -939,7 +939,7 @@ function initScrollReveal() {
   }, { threshold: 0.1 });
   sections.forEach(s => obs.observe(s));
 }
-const VALID_TABS = ['home', 'simulator', 'ai-engine', 'dashboard', 'architecture'];
+const VALID_TABS = ['home', 'simulator', 'ai-engine', 'dashboard', 'corridors', 'architecture'];
 const TAB_ALIASES = { 'tech-stack': 'architecture', 'roadmap': 'architecture', 'impact': 'home' };
 const KEY_SHORTCUTS = {
   '1': 'home',
